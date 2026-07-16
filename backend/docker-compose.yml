@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: purchase-tracker-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: purchase_tracker
+      POSTGRES_USER: purchase_tracker_dev
+      POSTGRES_PASSWORD: purchase_tracker_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - purchase_tracker_pgdata:/var/lib/postgresql/data
+
+volumes:
+  purchase_tracker_pgdata:
