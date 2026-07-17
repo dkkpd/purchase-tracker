@@ -19,6 +19,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - name: Build with Maven
+        working-directory: backend
         run: ./mvnw -B clean package -DskipTests
   frontend:
     name: Build frontend
