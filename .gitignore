@@ -1,3 +1,4 @@
 family-purchase-tracker-web-plan.md
 
 *.env
+*.env.local
