@@ -6,20 +6,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.Date;
-
-import org.hibernate.type.descriptor.jdbc.JdbcTypeFamilyInformation.Family;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "purchases")
 @Getter // Lombok annotation to automatically generate getter methods to avoid manually typing them
 @Setter // Lombok annotation to automatically generate setter methods to avoid manually typing them
 @NoArgsConstructor // Lombok annotation to automatically generate a no-argument constructor to avoid manually typing it
-public class Purchases {
+public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "network_id", nullable = false)
@@ -33,7 +31,7 @@ public class Purchases {
     private String description;
 
     @Column(name = "purchase_date", nullable = false)
-    private Date purchaseDate;
+    private LocalDate purchaseDate;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
