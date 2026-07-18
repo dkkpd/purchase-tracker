@@ -1,3 +1,10 @@
+/*
+TODO:
+    - In family_networks table, make created_by nullable, ON DELETE SET NULL, so that if the creater deletes their account, the field is set as null
+    - In purchases table, in purchaser_id, add ON DELETE RESTRICT so that if the purchaser deletes their account, it restricts them so that we don't have purchases without a purchaser
+    - In settlements table, add ON DELETE RESTRICT on both paid_by and paid_to so that we do not have settlements without payers and payees.
+*/
+
 -- Users
 CREATE TABLE users (
     id            BIGSERIAL PRIMARY KEY, --USER ID
@@ -29,7 +36,7 @@ CREATE TABLE network_members (
 CREATE TABLE purchases (
     id            BIGSERIAL PRIMARY KEY, --PURCHASE ID
     network_id    BIGINT NOT NULL REFERENCES family_networks(id), --NETWORK ID
-    purchaser_id  BIGINT NOT NULL REFERENCES users(id), --PURCHASER ID
+    purchaser_id  BIGINT NOT NULL REFERENCES users(id), --PURCHASER ID, user who purchased the items
     description   VARCHAR(255) NOT NULL, --DESCRIPTION
     purchase_date DATE NOT NULL, --PURCHASE DATE
     created_at    TIMESTAMP NOT NULL DEFAULT now(),
@@ -39,7 +46,7 @@ CREATE TABLE purchases (
 -- Purchase Items (line items within a purchase, each tagged to a recipient)
 CREATE TABLE purchase_items (
     id            BIGSERIAL PRIMARY KEY, --PURCHASE ITEM ID
-    purchase_id   BIGINT NOT NULL REFERENCES purchases(id), --PURCHASE ID
+    purchase_id   BIGINT NOT NULL REFERENCES purchases(id),
     description   VARCHAR(255) NOT NULL, --DESCRIPTION
     cost          NUMERIC(12,2) NOT NULL, --COST
     recipient_id  BIGINT NOT NULL REFERENCES users(id) --RECIPIENT ID
