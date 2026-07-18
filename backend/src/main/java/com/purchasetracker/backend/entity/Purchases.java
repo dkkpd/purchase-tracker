@@ -6,36 +6,44 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Date;
+
+import org.hibernate.type.descriptor.jdbc.JdbcTypeFamilyInformation.Family;
 
 @Entity
-@Table(
-    name = "network_members",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"network_id", "user_id"})
-)
+@Table(name = "purchases")
 @Getter // Lombok annotation to automatically generate getter methods to avoid manually typing them
 @Setter // Lombok annotation to automatically generate setter methods to avoid manually typing them
 @NoArgsConstructor // Lombok annotation to automatically generate a no-argument constructor to avoid manually typing it
-public class NetworkMembers {
+public class Purchases {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+    private long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "network_id", nullable = false)
     private FamilyNetwork network;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "purchaser_id", nullable = false)
+    private User purchaser;
 
-    @Column(name = "joined_at", nullable = false)
-    private Instant joinedAt;
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "purchase_date", nullable = false)
+    private Date purchaseDate;
+
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @Column(name = "deleted_at", nullable = true)
+    private Instant deletedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.joinedAt = Instant.now();
+        this.createdAt = Instant.now();
     }
-
-
+    
 }
