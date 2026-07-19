@@ -174,11 +174,6 @@ remembering:**
    `application.properties` credentials didn't exactly match what
    `docker-compose.yml` had actually created the user/database with (I'd
    renamed something partway through and only updated one file).
-   Hibernate opens a real connection on startup specifically to ask "what
-   database are you, what dialect do you speak" — if that handshake fails
-   for *any* reason, including bad credentials, this is the error you get,
-   even though it reads like a SQL-dialect problem rather than the auth
-   problem it actually was.
 
 **General lesson:** if Spring Boot can't start because of the database,
 it's almost always one of two things — the database isn't running, or it
@@ -193,7 +188,7 @@ spec, real clients read fields by name not position), but a good reminder
 that ordering in Java is something you explicitly ask for
 (`LinkedHashMap`), never assumed.
 
-### Phase 1: Database Schema & Migrations — Done (entities still pending)
+### Phase 1: Database Schema & Migrations — Done
 
 Designed and wrote the full schema as a single Flyway migration
 (`V1__init_schema.sql`) covering all six tables above, with real foreign
@@ -202,8 +197,9 @@ indexes on the columns I know will be queried constantly. Confirmed
 Flyway runs it automatically on app startup and correctly tracks it in its
 own `flyway_schema_history` table.
 
-**Still to do in Phase 1:** the JPA `@Entity` classes mapping these tables
-to actual Java objects — schema's done, the Java-side mapping is next.
+**Notes:**
+- Every `@ManyToOne` relationship uses `fetch = FetchType.LAZY` so that it is only fetched if the code requests it. This avoids the app silently runs extra queries even when we might not want it to. If I were to use EAGER, loading let's say 50 `Purchase` rows would also silently load 50 additional queries to get each purchaser. Using LAZY makes it so that it only loads the purchaser when we specifically request it.
+- Every money field uses `BigDecimal` with `precision = 12, scale = 2` to match the `NUMERIC(12,2)` in the schema. This also aids in avoiding rounding errors.
 
 **What I noticed in practice — the Flyway migration that silently didn't
 run:**
@@ -222,5 +218,18 @@ doesn't mean the framework is actually *using* it — auto-configuration in
 Spring Boot can be quietly conditional on things (file location, naming
 convention, explicit properties) that aren't obvious from the dependency
 list alone.
+
+**Bugs I encountered:**
+
+- Migration checksum mismatch: After the initial schema was also migrated, I added some comments to the same V1 schema file, thinking it's just comments, nothing would change. However, when I restarted, Flyway refused to start at all, and I was so confused. Turns out, Flyway fingerprints every migration file's exact content, even comments, so even changing the comments suggests to Flyway that the schema was changed. Since at this stage the database was empty and there was nothing worth perserving, I could wipe the container entirely by running `docker compose down-v` then `docker compose up -d`. *Lesson for future: Once a migration's been applied, always make changes to the schema in new migration files, never make edits to a schema that's already been migrated to the databse, even if it's just comments.*
+- Password auth failure after recreating container: After the above fix, I got another error `FATAL: password auth failed for user "purchase_tracker"`. I checked my application.properties file and the username and password appeared correct from my memory, but after I ran `docker exec -it purchase-tracker-postgres env`, I found out that there was a username mismatch.
+
+---
+
+## Current state
+
+- No authentication yet. Anyone with API access can hit my endpoints.
+- The only endpoint currently is `/api/health`
+- Very basic frontend so far, just a header and a api health statement.
 
 ---
