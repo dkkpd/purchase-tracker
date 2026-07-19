@@ -29,7 +29,7 @@ CREATE TABLE network_members (
     network_id  BIGINT NOT NULL REFERENCES family_networks(id), --NETWORK ID
     user_id     BIGINT NOT NULL REFERENCES users(id), --USER ID
     joined_at   TIMESTAMP NOT NULL DEFAULT now(), --JOIN DATE
-    UNIQUE (network_id, user_id)
+    UNIQUE (network_id, user_id) -- makes sure we don't have 2 of the same pairings of network_id and user_id. Basically makes sure we dont have duplicate users within the same network
 );
 
 -- Purchases

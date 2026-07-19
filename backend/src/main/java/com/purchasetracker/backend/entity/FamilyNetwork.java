@@ -28,7 +28,12 @@ public class FamilyNetwork {
     @JoinColumn(name = "created_by", nullable = true)  //nullable set to true because if the creator were to be deleted, this field should be null.
     private User createdBy;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+    }
 
 }

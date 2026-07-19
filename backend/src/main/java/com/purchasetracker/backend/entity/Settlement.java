@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "purchases")
+@Table(name = "settlements")
 @Getter // Lombok annotation to automatically generate getter methods to avoid manually typing them
 @Setter // Lombok annotation to automatically generate setter methods to avoid manually typing them
 @NoArgsConstructor // Lombok annotation to automatically generate a no-argument constructor to avoid manually typing it
-public class Purchase {
+public class Settlement{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,24 +24,25 @@ public class Purchase {
     private FamilyNetwork network;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "purchaser_id", nullable = false)
-    private User purchaser;
+    @JoinColumn(name = "paid_by", nullable = false)
+    private User paidBy;
 
-    @Column(name = "description", nullable = false)
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paid_to", nullable = false)
+    private User paidTo;
 
-    @Column(name = "purchase_date", nullable = false)
-    private LocalDate purchaseDate;
+    @Column(name = "amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal amount;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    @Column(name = "note", nullable = true)
+    private String note;
 
-    @Column(name = "deleted_at", nullable = true, updatable = false)
-    private Instant deletedAt;
+    @Column(name = "settled_at", nullable = false, updatable = false)
+    private Instant settledAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = Instant.now();
+        this.settledAt = Instant.now();
     }
-    
+
 }
