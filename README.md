@@ -188,6 +188,8 @@ spec, real clients read fields by name not position), but a good reminder
 that ordering in Java is something you explicitly ask for
 (`LinkedHashMap`), never assumed.
 
+---
+
 ### Phase 1: Database Schema & Migrations — Done
 
 Designed and wrote the full schema as a single Flyway migration
@@ -225,11 +227,60 @@ list alone.
 - Password auth failure after recreating container: After the above fix, I got another error `FATAL: password auth failed for user "purchase_tracker"`. I checked my application.properties file and the username and password appeared correct from my memory, but after I ran `docker exec -it purchase-tracker-postgres env`, I found out that there was a username mismatch.
 
 ---
+### Phase 2: Auth — Register, Login, JWT — Done
+
+Built out the full auth flow: registration with bcrypt-hashed passwords, a login
+endpoint that issues a JWT, and a custom `JwtAuthenticationFilter` wired into
+Spring Security's filter chain so protected endpoints actually enforce a valid
+token instead of just pretending to.
+
+I verified the filter chain was doing its job by temporarily pulling
+`/api/health` off the permitted list and confirming a request without a valid
+token got rejected while one with a valid token went through — then restored
+it to `permitAll()`, since a health check should stay reachable regardless of
+auth status.
+
+### Design Decisions
+- There are Data Transfer Objects(DTOs) at every API boundary.
+- Explicitly set
+  `SessionCreationPolicy.STATELESS` — the server never stores "who's logged
+  in" anywhere; every request has to prove identity fresh via its token's
+  signature.
+- Same generic error message for "no such user" and "wrong password" to avoid giving clues on login
+- **`LoginRequest` deliberately skips the `@Email`/`@Size` validation** that
+  `RegisterRequest` has because at login, verifying if the email and password adhere to the expectations can potentially leak info about *why* login failed. A little caveat that I thought was neat.
+- **JWT secret pulled from an environment variable (`JWT_SECRET`) stored on my local machine.
+
+### Bugs I
+
+**Bug 1: a typo that broke exception handling.**
+I accidently wrote IllegalAccessException instead of IllegalArgumentException. While testing and debugging, I got different errors on the terminal and in the JSON response body, which made me realize this mix-up.
+
+**Bug 2: a field that quietly never got set.**
+In `AuthService.register()`, I'd called `setEmail()` twice by mistake instead
+of calling `setName()` at all. The request validated fine (name genuinely
+wasn't blank in the JSON), so the bug wasn't in validation — it was a few
+lines later, where I just never copied that field onto the entity. Clean
+input validation doesn't guarantee clean logic afterward.
+
+**Bug 3: "fixing" a bug that never actually got recompiled.**
+I edited the file, re-sent the request, and got the exact same error. Turned
+out I'd never restarted `BackendApplication`, I didn't know Spring Boot doesn't hot-reload
+by default.
+**New habit going forward: fully stop and restart after every code change**,
+don't just re-send the request and assume the fix took.
+
+### Still To Do
+No real protected business endpoints exist yet to meaningfully test
+authorization against — right now it's just `/api/health`, which is
+intentionally left open. That changes with Phase 3 (family networks), which
+will be the first genuinely protected resource in the app.
 
 ## Current state
+- Database and Auth is mostly built out
+- No real protected endpoints to meaningfully test authorization against.
 
-- No authentication yet. Anyone with API access can hit my endpoints.
-- The only endpoint currently is `/api/health`
-- Very basic frontend so far, just a header and a api health statement.
+## Still to do
+- Build the endpoints and logic for the family networks
 
 ---
