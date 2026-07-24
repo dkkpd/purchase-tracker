@@ -17,26 +17,26 @@ api.interceptors.request.use((config) => {
 })
 
 export interface RegisterRequest {
-    name: String;
-    email: String;
-    password: String;
+    name: string;
+    email: string;
+    password: string;
 }
 
 export interface RegisterResponse {
     id: number
-    name: String
-    email: String
+    name: string
+    email: string
 }
 
 export interface LoginRequest {
-    email: String
-    password: String
+    email: string
+    password: string
 }
 
 export interface LoginResponse {
-    token: String
+    token: string
     userId: number
-    name: String
+    name: string
 }
 
 export async function register(data: RegisterRequest): Promise<RegisterResponse> {
