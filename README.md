@@ -227,7 +227,7 @@ list alone.
 - Password auth failure after recreating container: After the above fix, I got another error `FATAL: password auth failed for user "purchase_tracker"`. I checked my application.properties file and the username and password appeared correct from my memory, but after I ran `docker exec -it purchase-tracker-postgres env`, I found out that there was a username mismatch.
 
 ---
-### Phase 2: Auth — Register, Login, JWT — Done
+### Phase 2: Auth — Register, Login, JWT — Done. Frontend — In progress 
 
 Built out the full auth flow: registration with bcrypt-hashed passwords, a login
 endpoint that issues a JWT, and a custom `JwtAuthenticationFilter` wired into

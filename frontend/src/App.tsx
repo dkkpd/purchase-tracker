@@ -1,11 +1,12 @@
 import {useState, useEffect} from 'react'
-
+import RegisterForm from "./components/RegisterForm";
+import LoginForm from "./components/LoginForm";
+import { isLoggedIn } from "./lib/auth";
 
 function App() {
 
-  const healthState =  useState("checking...")
-  const health = healthState[0]
-  const setHealth = healthState[1]
+  const [health, setHealth] = useState("checking...");
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
 
   useEffect(() => {
     fetch("http://localhost:8080/api/health")
@@ -21,8 +22,16 @@ function App() {
     <div>
       <h1>Purchase Tracker</h1>
       <p>Health Status: {health}</p>
+        {loggedIn ? ( // condition ? ifTrue : ifFalse
+            <p>You're logged in!</p>
+        ): (
+            <>
+                <RegisterForm />
+                <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
+            </>
+        )}
     </div>
-  )
+  );
 }
 
 export default App
