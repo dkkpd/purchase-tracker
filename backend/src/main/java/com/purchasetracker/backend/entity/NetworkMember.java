@@ -15,7 +15,7 @@ import java.time.Instant;
 @Getter // Lombok annotation to automatically generate getter methods to avoid manually typing them
 @Setter // Lombok annotation to automatically generate setter methods to avoid manually typing them
 @NoArgsConstructor // Lombok annotation to automatically generate a no-argument constructor to avoid manually typing it
-public class NetworkMembers {
+public class NetworkMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
