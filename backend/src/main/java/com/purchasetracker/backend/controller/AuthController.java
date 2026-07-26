@@ -31,23 +31,12 @@ public class AuthController {
 
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> hangleIllegalArgument(IllegalArgumentException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
-    }
-
-    
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
 
         LoginResponse response = authService.login(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> hangleBadCredentials(BadCredentialsException exception) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
-    }   
 
 }
 
