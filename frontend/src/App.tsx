@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
-import { isLoggedIn } from "./lib/auth";
+import { isLoggedIn, clearToken } from "./lib/auth";
 import NetworkDashboard from './components/NetworkDashboard';
 
 function App() {
@@ -19,12 +19,20 @@ function App() {
       })
   }, [])
 
+  function handleLogout() {
+    clearToken();
+    setLoggedIn(false);
+  }
+
   return (
     <div>
       <h1>Purchase Tracker</h1>
       <p>Health Status: {health}</p>
         {loggedIn ? ( // condition ? ifTrue : ifFalse
-            <NetworkDashboard />
+            <>
+                <button type="button" onClick={handleLogout}>Logout</button>
+                <NetworkDashboard />
+            </>
         ): (
             <>
                 <RegisterForm />
