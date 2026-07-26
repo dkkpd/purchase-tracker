@@ -51,9 +51,4 @@ public class NetworkController {
         return ResponseEntity.ok(networkService.getNetworkById(id));
     }
 
-    @ExceptionHandler(SecurityException.class)
-    public ResponseEntity<String> handleSecurityException(SecurityException exception) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
-    }
-
 }

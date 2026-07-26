@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import { isLoggedIn } from "./lib/auth";
+import NetworkDashboard from './components/NetworkDashboard';
 
 function App() {
 
@@ -23,11 +24,12 @@ function App() {
       <h1>Purchase Tracker</h1>
       <p>Health Status: {health}</p>
         {loggedIn ? ( // condition ? ifTrue : ifFalse
-            <p>You're logged in!</p>
+            <NetworkDashboard />
         ): (
             <>
                 <RegisterForm />
                 <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
+                
             </>
         )}
     </div>

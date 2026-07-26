@@ -33,6 +33,7 @@ public ResponseEntity<String> handleSecurityException(SecurityException exceptio
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
 }
 
+// handle @Valid, @Email, @Size, @NotBlank exceptions, return as Map of exceptions
 @ExceptionHandler(MethodArgumentNotValidException.class)
 public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
     Map<String, String> errors = new HashMap<>();
