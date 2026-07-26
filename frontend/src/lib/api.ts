@@ -56,6 +56,12 @@ export interface NetworkResponse {
     createdAt: string
 }
 
+export interface MeResponse {
+    id: number
+    name: string
+    email: string
+}
+
 export async function register(data: RegisterRequest): Promise<RegisterResponse> {
     const response = await api.post<RegisterResponse>("/auth/register", data);
     return response.data;
@@ -82,7 +88,12 @@ export async function getMyNetworks(): Promise<NetworkResponse[]> {
 }
 
 export async function getNetworkById(id: number): Promise<NetworkResponse> {
-    const response = await api.get<NetworkResponse>(`/networks/${id}`)
+    const response = await api.get<NetworkResponse>(`/networks/${id}`);
+    return response.data;
+}
+
+export async function getMe(): Promise<MeResponse> {
+    const response = await api.get<MeResponse>("/users/me");
     return response.data;
 }
 
