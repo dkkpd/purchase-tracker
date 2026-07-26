@@ -68,22 +68,6 @@ if (loading) {
     return <p>Loading your networks...</p>;
 }
 
-let content;
-
-if (networks.length === 0) {
-    content = <p>You're not in any networks yet.</p>;
-} else {
-    content = (
-        <ul>
-            {networks.map((network) => (
-                <li key = {network.id}>
-                    {network.name} - invite code: <strong>{network.inviteCode}</strong>
-                </li>
-            ))}
-        </ul>
-    )
-}
-
 
 return (
     <div>
