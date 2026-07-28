@@ -62,6 +62,48 @@ export interface MeResponse {
     email: string
 }
 
+export interface PurchaseItemRequest {
+    description: string
+    cost: number
+    recipientId: number
+}
+
+export interface CreatePurchaseRequest {
+    description: string
+    purchaseDate: string
+    items: PurchaseItemRequest[]
+}
+
+export interface PurchaseItemResponse {
+    id: number
+    description: string
+    cost: number
+    recipientId: number
+}
+
+export interface PurchaseResponse {
+    id: number
+    networkId: number
+    purchaserId: number
+    description: string
+    purchaseDate: string
+    items: PurchaseItemResponse[]
+    createdAt: string
+}
+
+export interface MemberResponse {
+    id: number
+    name: string
+}
+
+export interface UsernameRequest {
+    id: number
+}
+
+export interface UsernameResponse {
+    name: string
+}
+
 export async function register(data: RegisterRequest): Promise<RegisterResponse> {
     const response = await api.post<RegisterResponse>("/auth/register", data);
     return response.data;
@@ -96,6 +138,31 @@ export async function getMe(): Promise<MeResponse> {
     const response = await api.get<MeResponse>("/users/me");
     return response.data;
 }
+
+export async function createPurchase(networkId: number, data: CreatePurchaseRequest): Promise<PurchaseResponse> {
+    const response = await api.post<PurchaseResponse>(`/networks/${networkId}/purchases`, data);
+    return response.data;
+}
+
+export async function getPurchases(networkId: number): Promise<PurchaseResponse[]> {
+    const response = await api.post<PurchaseResponse[]>(`/networks/${networkId}/purchases`);
+    return response.data;
+}
+
+export async function deletePurchase(networkId: number, purchaseId: number): Promise<void> {
+    await api.delete(`/api/networks/${networkId}/purchases/${purchaseId}`);
+}
+
+export async function getNetworkMembers(networkId: number): Promise<MemberResponse[]> {
+    const response = await api.get<MemberResponse[]>(`/networks/${networkId}/members`);
+    return response.data;
+}
+
+export async function getUsernameById(): Promise<NetworkResponse> {
+    const response = await api.get("users/getUser");
+    return response.data;
+}
+
 
 
 

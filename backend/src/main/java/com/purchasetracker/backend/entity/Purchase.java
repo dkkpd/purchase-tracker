@@ -36,7 +36,7 @@ public class Purchase {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "deleted_at", nullable = true, updatable = false)
+    @Column(name = "deleted_at", nullable = true, updatable = true)
     private Instant deletedAt;
 
     @PrePersist

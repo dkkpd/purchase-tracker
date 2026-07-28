@@ -2,6 +2,7 @@ package com.purchasetracker.backend.controller;
 
 import com.purchasetracker.backend.dto.CreateNetworkRequest;
 import com.purchasetracker.backend.dto.JoinNetworkRequest;
+import com.purchasetracker.backend.dto.MemberResponse;
 import com.purchasetracker.backend.dto.NetworkResponse;
 import com.purchasetracker.backend.service.NetworkService;
 import jakarta.validation.Valid;
@@ -49,6 +50,11 @@ public class NetworkController {
     @GetMapping("/{id}")
     public ResponseEntity<NetworkResponse> getNetworkById(@PathVariable Long id) {
         return ResponseEntity.ok(networkService.getNetworkById(id));
+    }
+
+    @GetMapping("{id}/members")
+    public ResponseEntity<List<MemberResponse>>getNetworkMembers(@PathVariable Long id) {
+        return ResponseEntity.ok(networkService.getNetworkMembers(id));
     }
 
 }

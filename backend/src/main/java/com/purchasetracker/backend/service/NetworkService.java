@@ -2,6 +2,7 @@ package com.purchasetracker.backend.service;
 
 import com.purchasetracker.backend.dto.CreateNetworkRequest;
 import com.purchasetracker.backend.dto.JoinNetworkRequest;
+import com.purchasetracker.backend.dto.MemberResponse;
 import com.purchasetracker.backend.dto.NetworkResponse;
 import com.purchasetracker.backend.entity.FamilyNetwork;
 import com.purchasetracker.backend.entity.NetworkMember;
@@ -99,6 +100,20 @@ public class NetworkService {
         FamilyNetwork network = familyNetworkRepository.findById(networkId).orElseThrow(() -> new IllegalArgumentException("Network not found"));
 
         return toResponse(network);
+
+    }
+
+    public List<MemberResponse> getNetworkMembers(Long networkId) {
+
+        Long currentUserId = currentUserProvider.getCurrentUserId();
+
+        if (!networkMemberRepository.existsByNetworkIdAndUserId(networkId, currentUserId)) {
+            throw new SecurityException("Not a member of this network");
+        }
+
+        return networkMemberRepository.findByNetworkId(networkId).stream()
+                .map(member -> new MemberResponse(member.getUser().getId(), member.getUser().getName()))
+                .toList();
 
     }
 

@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NetworkMemberRepository extends JpaRepository<NetworkMember, Long> {
-    List<NetworkMember> findByNetworkId(Long networkId);
-    List<NetworkMember> findByUserId(Long userId);
+    List<NetworkMember> findByNetworkId(Long networkId); //list of all users in network
+    List<NetworkMember> findByUserId(Long userId); //list of all networks the user is a part of
     Optional<NetworkMember> findByNetworkIdAndUserId(Long networkId, Long userId);
     boolean existsByNetworkIdAndUserId(Long networkId, Long userId);
 }
