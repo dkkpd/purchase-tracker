@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { register } from "../lib/api"
 import type { RegisterRequest } from "../lib/api";
-import axios from "axios";
+import { getErrorMessage } from "../lib/errors";
 
 function RegisterForm() {
     const [name, setName] = useState("");
@@ -24,11 +24,7 @@ function RegisterForm() {
             setEmail("");
             setPassword("");
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data as string);
-            } else {
-                setError("Something went wrong. Please try again.");
-            }
+            setError(getErrorMessage(error, "Something went wrong. Please try again."));
         }
     }
 

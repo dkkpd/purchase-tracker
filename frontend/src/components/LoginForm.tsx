@@ -2,7 +2,7 @@ import {useState} from "react";
 import {login} from "../lib/api";
 import type {LoginRequest} from "../lib/api";
 import {saveToken} from "../lib/auth";
-import axios from "axios";
+import { getErrorMessage } from "../lib/errors";
 
 interface LoginFormProps {
     onLoginSuccess: () => void;
@@ -26,11 +26,7 @@ function LoginForm({onLoginSuccess}: LoginFormProps) {
             setPassword("")
             onLoginSuccess();
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data as string);
-            } else {
-                setError("Something went wrong. Please try again.")
-            }
+            setError(getErrorMessage(error, "Something went wrong. Please try again."));
         }
     }
 

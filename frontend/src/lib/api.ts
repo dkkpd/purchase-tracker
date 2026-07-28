@@ -145,12 +145,12 @@ export async function createPurchase(networkId: number, data: CreatePurchaseRequ
 }
 
 export async function getPurchases(networkId: number): Promise<PurchaseResponse[]> {
-    const response = await api.post<PurchaseResponse[]>(`/networks/${networkId}/purchases`);
+    const response = await api.get<PurchaseResponse[]>(`/networks/${networkId}/purchases`);
     return response.data;
 }
 
 export async function deletePurchase(networkId: number, purchaseId: number): Promise<void> {
-    await api.delete(`/api/networks/${networkId}/purchases/${purchaseId}`);
+    await api.delete(`/networks/${networkId}/purchases/${purchaseId}`);
 }
 
 export async function getNetworkMembers(networkId: number): Promise<MemberResponse[]> {

@@ -3,14 +3,17 @@ import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import { isLoggedIn, clearToken } from "./lib/auth";
 import NetworkDashboard from './components/NetworkDashboard';
+import NetworkDetailPage from './components/NetworkDetailsPage';
 import { getMe } from './lib/api';
 
 function App() {
 
   const [health, setHealth] = useState("checking...");
   const [loggedIn, setLoggedIn] = useState(isLoggedIn());
-  const [userName, setUserName] = useState<string | null> (null);
-  const [email, setEmail] = useState<string | null> (null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [selectedNetworkId, setSelectedNetworkId] = useState<number | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   //health
   useEffect(() => {
@@ -27,6 +30,7 @@ function App() {
     if (!loggedIn) {
       setUserName(null);
       setEmail(null);
+      setCurrentUserId(null);
       return;
     }
 
@@ -34,6 +38,7 @@ function App() {
       .then((me) => {
         setUserName(me.name);
         setEmail(me.email);
+        setCurrentUserId(me.id);
       })
       .catch((error) => {
         console.error("Failed to load current user:", error);
@@ -47,6 +52,7 @@ function App() {
     clearToken();
     setUserName(null);
     setEmail(null);
+    setCurrentUserId(null);
     setLoggedIn(false);
   }
 
@@ -54,19 +60,30 @@ function App() {
     <div>
       <h1>Purchase Tracker</h1>
       <p>Health Status: {health}</p>
-        {loggedIn ? ( // condition ? ifTrue : ifFalse
-            <>
-                <p>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
-                <button type="button" onClick={handleLogout}>Logout</button>
-                <NetworkDashboard />
-            </>
-        ): (
-            <>
-                <RegisterForm />
-                <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
-                
-            </>
-        )}
+      {loggedIn ? (
+        <>
+          <p>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
+          <button type="button" onClick={handleLogout}>Logout</button>
+          {selectedNetworkId === null ? (
+            <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
+          ) : (
+            <div>
+              <button type="button" onClick={() => setSelectedNetworkId(null)}>
+                &larr; Back to networks
+              </button>
+              <NetworkDetailPage
+                networkId={selectedNetworkId}
+                currentUserId={currentUserId ?? 0}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <RegisterForm />
+          <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
+        </>
+      )}
     </div>
   );
 }

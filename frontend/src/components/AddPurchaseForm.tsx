@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPurchase } from "../lib/api";
 import type { PurchaseItemRequest} from "../lib/api";
-import axios from "axios";
+import { getErrorMessage } from "../lib/errors";
 
 interface AddPurchaseFormProps {
     networkId: number;
@@ -48,11 +48,7 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
             setItems([{description: "", cost: 0, recipientId: members[0]?.id ?? 0}]);
             onPurchaseCreated();
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data as string);
-            } else {
-                setError("Something went wrong creating purchase.")
-            }
+            setError(getErrorMessage(error, "Something went wrong creating purchase."));
         }
     }
 

@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { createNetwork, joinNetwork, getMyNetworks } from "../lib/api";
 import type { NetworkResponse } from "../lib/api";
-import axios from "axios";
+import { getErrorMessage } from "../lib/errors";
 
-function NetworkDashboard() {
+interface NetworkDashboardProps {
+    onSelectNetwork: (networkId: number) => void;
+}
+
+function NetworkDashboard({onSelectNetwork}: NetworkDashboardProps) {
 
 const [networks, setNetworks] = useState<NetworkResponse[]>([]);
 const [loading, setLoading] = useState(true);
@@ -57,11 +61,7 @@ async function handleJoin(event: React.SubmitEvent) {
 }
 
 function handleApiError(error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data as string);
-    } else {
-        setError("Something went wrong");
-    }
+    setError(getErrorMessage(error, "Something went wrong"));
 }
 
 if (loading) {
@@ -79,7 +79,8 @@ return (
             <ul>
                 {networks.map((network) => (
                     <li key={network.id}>
-                        {network.name} - invite code: <strong>{network.inviteCode}</strong>
+                        <button onClick={() => onSelectNetwork(network.id)}>{network.name}</button>
+                        {" "} — invite code: <strong>{network.inviteCode}</strong>
                     </li>
                 ))}
             </ul>
