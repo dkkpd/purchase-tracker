@@ -51,12 +51,15 @@ function App() {
   }, [loggedIn]);
 
   useEffect(() => {
-    if (loggedIn && currentUserId !== null) {
-      loadMyBalances();
-    } else {
+    if (!loggedIn || currentUserId === null) {
       setMyBalances([]);
+      return;
     }
-  }, [loggedIn, currentUserId]);
+    // Refresh whenever the main dashboard is shown (including after leaving a network)
+    if (selectedNetworkId === null) {
+      loadMyBalances();
+    }
+  }, [loggedIn, currentUserId, selectedNetworkId]);
 
   async function loadMyBalances() {
     setMyBalancesLoading(true);

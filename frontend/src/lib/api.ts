@@ -106,7 +106,9 @@ export interface MyBalanceResponse {
     networkId: number
     networkName: string
     owedBy: number
+    owedByName: string
     owedTo: number
+    owedToName: string
     amount: number
 }
 

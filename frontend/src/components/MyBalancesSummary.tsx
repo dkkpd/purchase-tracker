@@ -23,8 +23,8 @@ function MyBalancesSummary({ currentUserId, balances, loading }: MyBalancesSumma
                     <li key={`${b.networkId}-${b.owedBy}-${b.owedTo}`}>
                         [{b.networkName}]{" "}
                         {b.owedBy === currentUserId
-                            ? `You owe user #${b.owedTo} $${b.amount.toFixed(2)}`
-                            : `User #${b.owedBy} owes you $${b.amount.toFixed(2)}`}
+                            ? `You owe ${b.owedToName} $${b.amount.toFixed(2)}`
+                            : `${b.owedByName} owes you $${b.amount.toFixed(2)}`}
                     </li>
                 ))}
             </ul>

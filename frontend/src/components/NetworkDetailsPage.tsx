@@ -27,7 +27,7 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
         setPurchases(purchasesData);
         setBalances(balancesData);
         setLoading(false);
-        onBalancesChanged?.();
+        await onBalancesChanged?.();
     }
 
     useEffect(() => {

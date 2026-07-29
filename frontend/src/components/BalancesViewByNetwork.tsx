@@ -16,7 +16,7 @@ function BalancesViewByNetwork({ balances, currentUserId, members }: BalancesVie
     );
 
     if (myBalances.length === 0) {
-        return <p>You're all settled up in this network.</p>;
+        return <p>{"You're all settled up in this network."}</p>;
     }
 
     return (

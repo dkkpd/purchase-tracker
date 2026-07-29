@@ -91,13 +91,20 @@ public class BalanceService {
         for (NetworkMember member: networkMembers) { //go through each network associated with the current user
             FamilyNetwork network = member.getNetwork();
 
+            Map<Long, String> nameById = new HashMap<>();
+            for (NetworkMember networkMember : networkMemberRepository.findByNetworkId(network.getId())) {
+                nameById.put(networkMember.getUser().getId(), networkMember.getUser().getName());
+            }
+
             for (BalanceResponse balance: getBalancesForNetwork(network.getId())) {  //go through each balance in the network associated with current user
                 if (balance.owedBy().equals(currentUserId) || balance.owedTo().equals(currentUserId)) { // if current user is involved in the balance
                     result.add(new MyBalanceResponse(
                             network.getId(),
                             network.getName(),
                             balance.owedBy(),
+                            nameById.getOrDefault(balance.owedBy(), "User #" + balance.owedBy()),
                             balance.owedTo(),
+                            nameById.getOrDefault(balance.owedTo(), "User #" + balance.owedTo()),
                             balance.amount()
                     ));
                 }
