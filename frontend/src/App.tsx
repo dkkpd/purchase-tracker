@@ -1,31 +1,32 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from "react";
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import { isLoggedIn, clearToken } from "./lib/auth";
-import NetworkDashboard from './components/NetworkDashboard';
-import NetworkDetailPage from './components/NetworkDetailsPage';
-import MyBalanceSummary from './components/MyBalancesSummary'
-import { getMe } from './lib/api';
+import NetworkDashboard from "./components/NetworkDashboard";
+import NetworkDetailPage from "./components/NetworkDetailsPage";
+import MyBalanceSummary from "./components/MyBalancesSummary";
+import { getMe, getMyBalances } from "./lib/api";
+import type { MyBalanceResponse } from "./lib/api";
 
 function App() {
-
   const [health, setHealth] = useState("checking...");
   const [loggedIn, setLoggedIn] = useState(isLoggedIn());
   const [userName, setUserName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [selectedNetworkId, setSelectedNetworkId] = useState<number | null>(null);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [myBalances, setMyBalances] = useState<MyBalanceResponse[]>([]);
+  const [myBalancesLoading, setMyBalancesLoading] = useState(false);
 
-  //health
   useEffect(() => {
     fetch("http://localhost:8080/api/health")
       .then((response) => response.json())
       .then((data) => setHealth(data.status))
       .catch((error) => {
-        console.error("Error fetching health status:", error)
-        setHealth(error.message)
-      })
-  }, [])
+        console.error("Error fetching health status:", error);
+        setHealth(error.message);
+      });
+  }, []);
 
   useEffect(() => {
     if (!loggedIn) {
@@ -49,6 +50,24 @@ function App() {
       });
   }, [loggedIn]);
 
+  useEffect(() => {
+    if (loggedIn && currentUserId !== null) {
+      loadMyBalances();
+    } else {
+      setMyBalances([]);
+    }
+  }, [loggedIn, currentUserId]);
+
+  async function loadMyBalances() {
+    setMyBalancesLoading(true);
+    try {
+      const data = await getMyBalances();
+      setMyBalances(data);
+    } finally {
+      setMyBalancesLoading(false);
+    }
+  }
+
   function handleLogout() {
     clearToken();
     setUserName(null);
@@ -66,10 +85,14 @@ function App() {
           <p>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
           <button type="button" onClick={handleLogout}>Logout</button>
           {selectedNetworkId === null ? (
-              <div>
-                <MyBalanceSummary currentUserId = {currentUserId ?? 0}/>
-                <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
-              </div>
+            <div>
+              <MyBalanceSummary
+                currentUserId={currentUserId ?? 0}
+                balances={myBalances}
+                loading={myBalancesLoading}
+              />
+              <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
+            </div>
           ) : (
             <div>
               <button type="button" onClick={() => setSelectedNetworkId(null)}>
@@ -78,6 +101,7 @@ function App() {
               <NetworkDetailPage
                 networkId={selectedNetworkId}
                 currentUserId={currentUserId ?? 0}
+                onBalancesChanged={loadMyBalances}
               />
             </div>
           )}
@@ -92,4 +116,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

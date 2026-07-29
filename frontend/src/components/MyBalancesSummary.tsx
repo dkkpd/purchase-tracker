@@ -1,22 +1,12 @@
-import { useState, useEffect } from "react";
-import { getMyBalances } from "../lib/api";
 import type { MyBalanceResponse } from "../lib/api";
 
 interface MyBalancesSummaryProps {
     currentUserId: number;
+    balances: MyBalanceResponse[];
+    loading: boolean;
 }
 
-function MyBalancesSummary({currentUserId}: MyBalancesSummaryProps) {
-    const [balances, setBalances] = useState<MyBalanceResponse[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        getMyBalances().then((data) => {
-            setBalances(data);
-            setLoading(false);
-        })
-    }, []);
-
+function MyBalancesSummary({ currentUserId, balances, loading }: MyBalancesSummaryProps) {
     if (loading) {
         return <p>Loading your balances...</p>;
     }
@@ -31,7 +21,7 @@ function MyBalancesSummary({currentUserId}: MyBalancesSummaryProps) {
             <ul>
                 {balances.map((b) => (
                     <li key={`${b.networkId}-${b.owedBy}-${b.owedTo}`}>
-                        [{b.networkName}]{""}
+                        [{b.networkName}]{" "}
                         {b.owedBy === currentUserId
                             ? `You owe user #${b.owedTo} $${b.amount.toFixed(2)}`
                             : `User #${b.owedBy} owes you $${b.amount.toFixed(2)}`}
@@ -39,7 +29,7 @@ function MyBalancesSummary({currentUserId}: MyBalancesSummaryProps) {
                 ))}
             </ul>
         </div>
-    )
+    );
 }
 
 export default MyBalancesSummary;
