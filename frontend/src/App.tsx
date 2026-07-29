@@ -4,6 +4,7 @@ import LoginForm from "./components/LoginForm";
 import { isLoggedIn, clearToken } from "./lib/auth";
 import NetworkDashboard from './components/NetworkDashboard';
 import NetworkDetailPage from './components/NetworkDetailsPage';
+import MyBalanceSummary from './components/MyBalancesSummary'
 import { getMe } from './lib/api';
 
 function App() {
@@ -65,7 +66,10 @@ function App() {
           <p>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
           <button type="button" onClick={handleLogout}>Logout</button>
           {selectedNetworkId === null ? (
-            <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
+              <div>
+                <MyBalanceSummary currentUserId = {currentUserId ?? 0}/>
+                <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
+              </div>
           ) : (
             <div>
               <button type="button" onClick={() => setSelectedNetworkId(null)}>

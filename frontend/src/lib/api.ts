@@ -96,13 +96,20 @@ export interface MemberResponse {
     name: string
 }
 
-export interface UsernameRequest {
-    id: number
+export interface BalanceResponse {
+    owedBy: number
+    owedTo: number
+    amount: number
 }
 
-export interface UsernameResponse {
-    name: string
+export interface MyBalanceResponse {
+    networkId: number
+    networkName: string
+    owedBy: number
+    owedTo: number
+    amount: number
 }
+
 
 export async function register(data: RegisterRequest): Promise<RegisterResponse> {
     const response = await api.post<RegisterResponse>("/auth/register", data);
@@ -160,6 +167,16 @@ export async function getNetworkMembers(networkId: number): Promise<MemberRespon
 
 export async function getUsernameById(): Promise<NetworkResponse> {
     const response = await api.get("users/getUser");
+    return response.data;
+}
+
+export async function getNetworkBalances(networkId: number): Promise<BalanceResponse[]> {
+    const response = await api.get<BalanceResponse[]>(`/networks/${networkId}/balances`);
+    return response.data;
+}
+
+export async function getMyBalances(): Promise<MyBalanceResponse[]> {
+    const response = await api.get<MyBalanceResponse[]>("/users/me/balances");
     return response.data;
 }
 

@@ -3,6 +3,7 @@ import { getNetworkMembers, getPurchases, deletePurchase } from "../lib/api";
 import type { MemberResponse, PurchaseResponse } from "../lib/api";
 import AddPurchaseForm from "./AddPurchaseForm";
 import PurchaseList from "./PurchaseList";
+import BalancesViewByNetwork from "./BalancesViewByNetwork";
 
 //this component must receive the networkId and currentUserId
 interface NetworkDetailsPageProps {
@@ -50,6 +51,11 @@ function NetworkDetailPage({networkId, currentUserId}: NetworkDetailsPageProps) 
                 networkId={networkId}
                 members={members}
                 onPurchaseCreated={loadData}
+            />
+            <BalancesViewByNetwork
+                networkId = {networkId}
+                currentUserId = {currentUserId}
+                members = {members}
             />
         </div>
     );
