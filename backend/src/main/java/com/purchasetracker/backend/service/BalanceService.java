@@ -1,9 +1,8 @@
 package com.purchasetracker.backend.service;
 
 import com.purchasetracker.backend.dto.BalanceResponse;
-import com.purchasetracker.backend.entity.Purchase;
-import com.purchasetracker.backend.entity.PurchaseItem;
-import com.purchasetracker.backend.entity.Settlement;
+import com.purchasetracker.backend.dto.MyBalanceResponse;
+import com.purchasetracker.backend.entity.*;
 import com.purchasetracker.backend.repository.*;
 import com.purchasetracker.backend.security.CurrentUserProvider;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,7 @@ public class BalanceService {
         }
 
         for (Settlement settlement: settlementRepository.findByNetworkId(networkId)) {
-            applyDebt(net, settlement.getPaidTo().getId(), settlement.getPaidBy().getId(), settlement.getAmount().negate());
+            applyDebt(net, settlement.getPaidBy().getId(), settlement.getPaidTo().getId(), settlement.getAmount().negate());
         }
 
         List<BalanceResponse> result = new ArrayList<>();
@@ -79,6 +78,33 @@ public class BalanceService {
         }
 
         return result;
+    }
+
+    public List<MyBalanceResponse> getMyBalances() {
+
+        Long currentUserId = currentUserProvider.getCurrentUserId();
+
+        List<NetworkMember> networkMembers = networkMemberRepository.findByUserId(currentUserId);
+
+        List<MyBalanceResponse> result = new ArrayList<>();
+
+        for (NetworkMember member: networkMembers) { //go through each network associated with the current user
+            FamilyNetwork network = member.getNetwork();
+
+            for (BalanceResponse balance: getBalancesForNetwork(network.getId())) {  //go through each balance in the network associated with current user
+                if (balance.owedBy().equals(currentUserId) || balance.owedTo().equals(currentUserId)) { // if current user is involved in the balance
+                    result.add(new MyBalanceResponse(
+                            network.getId(),
+                            network.getName(),
+                            balance.owedBy(),
+                            balance.owedTo(),
+                            balance.amount()
+                    ));
+                }
+            }
+        }
+        return result;
+
     }
 
     private void applyDebt(Map<String, BigDecimal> net, Long debtorId, Long creditorId, BigDecimal amount) {

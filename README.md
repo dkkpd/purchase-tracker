@@ -29,7 +29,7 @@ balance calculations, once that exists).
 - **Database:** PostgreSQL 16, via Docker Compose
 - **Schema migrations:** Flyway
 - **ORM:** Spring Data JPA / Hibernate
-- **Frontend:** React + TypeScript (Vite) — not started yet
+- **Frontend:** React + TypeScript (Vite)
 - **IDE:** bouncing between VS Code and IntelliJ Ultimate (student license)
 
 ---
@@ -227,7 +227,7 @@ list alone.
 - Password auth failure after recreating container: After the above fix, I got another error `FATAL: password auth failed for user "purchase_tracker"`. I checked my application.properties file and the username and password appeared correct from my memory, but after I ran `docker exec -it purchase-tracker-postgres env`, I found out that there was a username mismatch.
 
 ---
-### Phase 2: Auth — Register, Login, JWT — Done. Frontend — In progress 
+### Phase 2: Auth — Register, Login, JWT — Done
 
 Built out the full auth flow: registration with bcrypt-hashed passwords, a login
 endpoint that issues a JWT, and a custom `JwtAuthenticationFilter` wired into
@@ -249,9 +249,9 @@ auth status.
 - Same generic error message for "no such user" and "wrong password" to avoid giving clues on login
 - **`LoginRequest` deliberately skips the `@Email`/`@Size` validation** that
   `RegisterRequest` has because at login, verifying if the email and password adhere to the expectations can potentially leak info about *why* login failed. A little caveat that I thought was neat.
-- **JWT secret pulled from an environment variable (`JWT_SECRET`) stored on my local machine.
+- JWT secret pulled from an environment variable (`JWT_SECRET`) stored on my local machine.
 
-### Bugs I
+### Bugs I encountered
 
 **Bug 1: a typo that broke exception handling.**
 I accidently wrote IllegalAccessException instead of IllegalArgumentException. While testing and debugging, I got different errors on the terminal and in the JSON response body, which made me realize this mix-up.
@@ -270,17 +270,252 @@ by default.
 **New habit going forward: fully stop and restart after every code change**,
 don't just re-send the request and assume the fix took.
 
-### Still To Do
-No real protected business endpoints exist yet to meaningfully test
-authorization against — right now it's just `/api/health`, which is
-intentionally left open. That changes with Phase 3 (family networks), which
-will be the first genuinely protected resource in the app.
+### Phase 2 (continued): Frontend — Register, Login, Token Storage — Done
 
-## Current state
-- Database and Auth is mostly built out
-- No real protected endpoints to meaningfully test authorization against.
+Finished the half of Phase 2 that was still outstanding: registration and
+login forms in React, a centralized Axios API client, and JWT persistence
+via `localStorage`.
 
-## Still to do
-- Build the endpoints and logic for the family networks
+**Key pieces built:**
+- `lib/api.ts` — a pre-configured Axios instance (`baseURL`, shared
+  `Content-Type` header) with typed request/response interfaces mirroring
+  the backend's DTOs field-for-field, and one function per endpoint
+  (`register`, `login`, and later every other endpoint)
+- `lib/auth.ts` — small wrapper around `localStorage` for saving/reading/
+  clearing the JWT
+- A **request interceptor** on the Axios instance that automatically
+  attaches `Authorization: Bearer <token>` to every outgoing request if a
+  token exists — meaning every endpoint built from here on gets
+  authenticated automatically, with zero extra code per call
+- `RegisterForm.tsx` / `LoginForm.tsx` — controlled components, calling
+  through the API client, with error handling for the backend's
+  string-based error responses and (later, discovered this didn't yet
+  cover object-shaped validation errors — see Phase 4 bug below)
+- A logout button (clears the
+  token, returns to login/register) and a `/api/users/me` endpoint +
+  frontend call to display who's currently signed in.
+
+**Design choice — JWT secret via environment variable, not hardcoded.**
+Set up `JWT_SECRET` as a real Windows environment variable (`setx`),
+referenced in `application.properties` via `${JWT_SECRET}`. If the secret
+were committed to git, anyone with repo access could forge valid tokens
+for any user.
+
+**Bugs I encountered:**
+
+1. **CORS still blocked the frontend even after adding `@CrossOrigin` to
+   `HealthController`.** Turned out `@CrossOrigin` only affects Spring
+   MVC's own request handling — but Spring Security's filter chain runs
+   *first*, before a request ever reaches a controller, and it has no
+   idea about `@CrossOrigin` at all. Had to add a real
+   `CorsConfigurationSource` bean and explicitly wire it into
+   `SecurityConfig`'s filter chain (`.cors(cors -> ...)`) for the browser
+   to actually be let through. Good reminder that once Spring Security is
+   in the picture, it's the first gatekeeper for everything, even controller level annotations.
+
+2. **Registration returned a `null` name in the database**, even though
+   the incoming request had a valid, non-blank name and
+   validation passed. Root cause: a copy-paste mistake in
+   `AuthService.register()` — `setEmail()` was called twice; `setName()`
+   was never called at all.
+
+3. **A duplicate-email test returned a raw `500` instead of the intended
+   `409`.** Root cause: a typo in the exception handler's own signature —
+   `handleIllegalArgument(IllegalAccessException ex)` instead of
+   `IllegalArgumentException ex`. Two unrelated exception classes that
+   just look similar at a glance. Spring couldn't match the actually
+   thrown exception to this handler's parameter type, so it never ran at
+   all, producing its own unrelated `IllegalStateException: Could not
+   resolve parameter` instead.
 
 ---
+
+### Phase 3: Family Networks — Done
+
+Built the first real business resource in the app: family networks with
+invite-code-based joining, backed by a genuine authorization check (not
+just authentication) for the first time.
+
+**Backend:** `FamilyNetworkRepository`, `NetworkMemberRepository`,
+`CurrentUserProvider` (extracts the current user's ID from the verified
+JWT via `SecurityContextHolder`, so no endpoint ever trusts a
+client-supplied user ID), `NetworkService` (create/join/list/get-by-id),
+`NetworkController`. Invite codes are 8 characters, generated with
+`SecureRandom` (not `Random` — codes are effectively a shared secret
+controlling who can join a private family network), drawn from an
+alphabet that deliberately excludes visually ambiguous characters
+(`I`/`O`/`0`/`1`) since people may read these off a screen and type them by
+hand.
+
+**Frontend:** `NetworkDashboard.tsx` — list networks, create one, join one
+via invite code, re-fetching the list after each action rather than
+manually patching local state (simpler, guarantees the UI always matches
+real server state).
+
+**Bugs I encountered**
+
+1. **Unresolved imports for `FamilyNetworkRepository` and
+   `NetworkMemberRepository`**, even though both files existed. Partly an
+   IDE indexing issue (fixed with a project reload), but also a genuine
+   naming bug underneath: I'd named the entity class `NetworkMembers`
+   (plural), inconsistent with every other entity in the project
+   (`User`, `FamilyNetwork`, `Purchase` — all singular, since one instance
+   = one row). Renamed to `NetworkMember` to match the established
+   convention; cost nothing at the database level since the table name is
+   controlled separately by `@Table(name = "network_members")`. I also switched between VS Code and IntelliJ a lot and in between, I forgot to add the .java extension when creating these two Repo classes in VS Code.
+
+2. **`getMyNetworks()` returned wrong/empty results silently** — no
+   error, no crash, just incorrect data. Root cause: called
+   `networkMemberRepository.findByNetworkId(currentUserId)` — passing a
+   *user* ID into a method that finds by *network* ID. Both are `Long`,
+   so it compiled fine and ran without complaint, just returned
+   meaningless results. Had to add a proper `findByUserId` method and use
+   that instead.
+3. **Attempted to call `findByNetworkIdAndUserId` on
+   `NetworkMemberRepository` expecting it to return the actual membership
+   object — it didn't exist yet.** Only `existsByNetworkIdAndUserId`
+   (returning a boolean) had been built. Added a real
+   `Optional<NetworkMember> findByNetworkIdAndUserId(...)` for cases that
+   need the actual object, not just a yes/no check.
+
+4. **An empty `403 Forbidden` with no response body at all**, for a
+   request that should have hit a real, handled `SecurityException` in
+   `NetworkController`. Turned out to be Spring Boot's own default
+   handling of an internal `/error` dispatch, happening *before* my
+   exception handler ever ran. Diagnosed by temporarily adding
+   `.requestMatchers("/error").permitAll()` to `SecurityConfig`, which
+   revealed the real underlying `500` and its actual cause — removed that
+   temporary matcher once the real bug was fixed.
+
+**Refactor triggered by this phase:** the same three-line authorization
+check (`existsByNetworkIdAndUserId` → throw `SecurityException`) had
+started appearing in multiple service methods, and the same exception
+handler methods (`IllegalArgumentException`, `SecurityException`) were
+duplicated across `AuthController` and `NetworkController` separately.
+Consolidated all exception handling into one `GlobalExceptionHandler`
+(`@RestControllerAdvice`), which applies across every controller in the
+app and removed the now-redundant handler methods from both controllers.
+Also added a dedicated handler for `MethodArgumentNotValidException`,
+returning a structured `{field: message}` map instead of Spring's generic
+default `400` body — this became directly relevant to a frontend bug in
+Phase 4 below.
+
+---
+
+### Phase 4: Purchases & Items — Done
+
+The core of the whole project — itemized purchases with multiple,
+independently-tagged recipients per purchase, plus real transactional
+integrity.
+
+**Backend:** `PurchaseRepository`, `PurchaseItemRepository`,
+`CreatePurchaseRequest` (using **nested validation** —
+`List<@Valid PurchaseItemRequest>`, since `@Valid` doesn't automatically
+cascade into collection elements),
+`PurchaseService`, `PurchaseController`. `createPurchase` and
+`deletePurchase` are both `@Transactional` because creating one purchase means
+writing one `Purchase` row plus N `PurchaseItem` rows; without a
+transaction boundary, a crash partway through could leave a purchase with
+only some of its items, silently corrupting the ledger. Also added an
+explicit check that every submitted item's `recipientId` is actually a
+member of the target network — nothing in basic field validation
+guarantees that on its own.
+
+**Frontend:** extended `api.ts`, `AddPurchaseForm.tsx` (a
+dynamic, variable-length list of item rows — add/remove/update
+individual rows immutably via the spread operator), `PurchaseList.tsx`. Added `MemberResponse` +
+`GET /api/networks/{id}/members` partway through, once it became clear
+the item-recipient dropdown needed real `{id, name}` data. Built
+`NetworkDetailPage.tsx` to tie purchases, members, and (soon) balances
+together for one specific network — fetches members and purchases
+concurrently via `Promise.all` rather than sequentially, since neither
+depends on the other. Wired real navigation into `App.tsx` (lift the
+"selected network" state up to the nearest common parent, pass a
+selection callback down into the dashboard's list).
+
+
+**Bugs I Encountered**
+
+1. **Assumed `findByNetworkIdAndUserId` already existed** (mixing it up
+   with the boolean-returning `existsByNetworkIdAndUserId`) while wiring
+   up `createPurchase`'s network lookup. Same category of "the method I
+   wanted wasn't actually built yet" as Phase 3's bug #3 — added the real
+   version, returning `Optional<NetworkMember>`.
+
+2. **`deletePurchase()` on the frontend was missing the network ID in its
+   URL entirely** (`/networks/purchases/{id}` instead of
+   `/networks/{networkId}/purchases/{id}`)
+
+3. **Submitting a purchase with any blank/invalid field crashed the page
+   to a blank screen**, instead of showing a validation error. Root
+   cause, and the more interesting lesson: the frontend's error handler
+   used `err.response.data as string` which isn't
+   an actual runtime check. It compiled fine and worked for
+   string-shaped error responses (like `"Email already registered"`), but
+   `MethodArgumentNotValidException`'s handler (added in Phase 3) returns
+   an **object** (`{field: message}` pairs) — and React cannot render a
+   plain object directly as a child, which crashes the whole component
+   tree. `as` tells the compiler "trust me," it doesn't verify anything —
+   the bug only surfaced downstream, in a completely different file, from
+   where the incorrect assumption was actually made. Fixed by adding a errors.ts file and implementing a helper function that I can call to obtain the error messaging, instead of having redundant error parsers on other files sharing a similar pattern (`RegisterForm`, `LoginForm`, `NetworkDashboard`,
+   `AddPurchaseForm`)
+   
+
+---
+
+### Phase 5: Balances — In Progress
+
+Implementing derived balances instead of storing them. Balances will be computed every time from the purchase/settlement history on each request.
+
+**Backend so far:** `SettlementRepository`, `BalanceService`,
+`BalanceController` (`GET /api/networks/{id}/balances`). The core
+algorithm nets every purchase item and settlement between any two people
+down to a single signed value, keyed by a **canonical, order-independent
+pair key** (smaller user ID first) so that a debt recorded in either
+direction between the same two people always accumulates into the same
+map entry rather than being tracked as two disconnected relationships.
+Self-purchases (an item whose recipient is also the purchaser) are
+explicitly skipped — no debt possible against yourself. Settlements are
+folded in with a negated amount, since a real payment moves value in the
+opposite direction of an unpaid debt.
+
+**What I noticed:** never compare `BigDecimal` values with `==` or
+`.equals()` for numeric equality — `.equals()` also considers scale
+(`2.0` vs `2.00` would count as "not equal"), so `.compareTo(...) == 0`
+is the correct check, used when filtering out perfectly net-zero balances
+before returning them.
+
+**Bugs I Encountered:**
+
+1. Settlements increased the balance instead of decreasing it.
+Listed balances for network 7 and got the expected result — user 15 owed user 16 $30.23. Logged a $10 settlement from 15 → 16, re-listed balances, and the amount went up to $40.23 instead of down to $20.23.
+The settlement was being saved correctly (paidById: 15, paidToId: 16, amount: 10). The bug was only in how settlements were applied during derivation:
+
+```java
+// Wrong — reverses the debt twice
+applyDebt(net, settlement.getPaidTo().getId(), settlement.getPaidBy().getId(), settlement.getAmount().negate());
+
+// Right — payer still owes payee, just less
+applyDebt(net, settlement.getPaidBy().getId(), settlement.getPaidTo().getId(), settlement.getAmount().negate());
+```
+applyDebt(debtor, creditor, amount) means "debtor owes creditor amount." A settlement from 15 to 16 should reduce that debt by 10. Swapping paidTo/paidBy and negating the amount both reverse the sign — so the settlement got applied as +10 instead of −10. The canonical key (lowerId:higherId) in applyDebt was fine; the settlement call was wrong.
+
+**Tests performed:**
+
+- Two purchases in opposite directions between the same pair of users
+  correctly net down to a single balance in the right direction and
+  amount
+- Recording a settlement matching an existing balance correctly zeroes
+  it out (the pair disappears from the balances list entirely, as
+  designed — no "you owe each other $0" entries)
+- Deleting a purchase correctly causes balances to recompute on the next
+  read, with no stale or orphaned data left behind
+
+**Still to do (Phase 5):**
+- `GET /api/users/me/balances` — balances across all networks for the logged-in user
+- Frontend: show pairwise balances on the network detail page
+- Tests: opposite-direction debts net correctly; deleted purchases excluded; settlements reduce balances
+
+**Started early (Phase 6):**
+- `POST /api/networks/{id}/settlements` — backend only, tested manually via HTTP client
+- Still need: `GET` settlement history, settle-up UI, settlement tests
