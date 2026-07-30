@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from 'react'
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import { isLoggedIn, clearToken } from "./lib/auth";
@@ -9,6 +9,7 @@ import { getMe, getMyBalances } from "./lib/api";
 import type { MyBalanceResponse } from "./lib/api";
 
 function App() {
+
   const [health, setHealth] = useState("checking...");
   const [loggedIn, setLoggedIn] = useState(isLoggedIn());
   const [userName, setUserName] = useState<string | null>(null);
@@ -18,15 +19,16 @@ function App() {
   const [myBalances, setMyBalances] = useState<MyBalanceResponse[]>([]);
   const [myBalancesLoading, setMyBalancesLoading] = useState(false);
 
+  //health
   useEffect(() => {
     fetch("http://localhost:8080/api/health")
       .then((response) => response.json())
       .then((data) => setHealth(data.status))
       .catch((error) => {
-        console.error("Error fetching health status:", error);
-        setHealth(error.message);
-      });
-  }, []);
+        console.error("Error fetching health status:", error)
+        setHealth(error.message)
+      })
+  }, [])
 
   useEffect(() => {
     if (!loggedIn) {
@@ -51,16 +53,12 @@ function App() {
   }, [loggedIn]);
 
   useEffect(() => {
-    if (!loggedIn || currentUserId === null) {
-      setMyBalances([]);
-      return;
-    }
-    // Refresh whenever the main dashboard is shown (including after leaving a network)
-    if (selectedNetworkId === null) {
+    if (loggedIn && currentUserId !== null) {
       loadMyBalances();
+    } else {
+      setMyBalances([]);
     }
-  }, [loggedIn, currentUserId, selectedNetworkId]);
-
+  }, [loggedIn, currentUserId]);
   async function loadMyBalances() {
     setMyBalancesLoading(true);
     try {
@@ -70,6 +68,7 @@ function App() {
       setMyBalancesLoading(false);
     }
   }
+
 
   function handleLogout() {
     clearToken();
@@ -88,7 +87,7 @@ function App() {
           <p>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
           <button type="button" onClick={handleLogout}>Logout</button>
           {selectedNetworkId === null ? (
-            <div>
+              <div>
               <MyBalanceSummary
                 currentUserId={currentUserId ?? 0}
                 balances={myBalances}
@@ -119,4 +118,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
