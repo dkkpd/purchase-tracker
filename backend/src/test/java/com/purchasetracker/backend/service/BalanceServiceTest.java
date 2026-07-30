@@ -108,12 +108,11 @@ class BalanceServiceTest {
 
         FamilyNetwork network = new FamilyNetwork();
         network.setId(10L);
-
-        purchaseByAlice.setNetwork(network);
+        
 
         PurchaseItem itemForBob = new PurchaseItem();
         itemForBob.setRecipient(bob);
-        itemForBob.setCost(new BigDecimal(30.00));
+        itemForBob.setCost(new BigDecimal("30.00"));
 
         when(purchaseRepository.findByNetworkIdAndDeletedAtIsNull(10L)).thenReturn(List.of(purchaseByAlice));
         when(purchaseItemRepository.findByPurchaseId(100L)).thenReturn(List.of(itemForBob));
@@ -125,7 +124,6 @@ class BalanceServiceTest {
         bobPaidAlice.setAmount(new BigDecimal("30.00"));
         bobPaidAlice.setPaidTo(alice);
         bobPaidAlice.setPaidBy(bob);
-        bobPaidAlice.setNetwork(network);
 
         when(settlementRepository.findByNetworkId(10L)).thenReturn(List.of(bobPaidAlice));
 
@@ -152,7 +150,7 @@ class BalanceServiceTest {
 
         PurchaseItem itemForAlice = new PurchaseItem();
         itemForAlice.setRecipient(alice);
-        itemForAlice.setCost(new BigDecimal(30.00));
+        itemForAlice.setCost(new BigDecimal("30.00"));
 
         // there should be no balances as of now as that was a self purchase
 
