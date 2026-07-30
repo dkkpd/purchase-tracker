@@ -4,6 +4,8 @@ import type { BalanceResponse, MemberResponse, PurchaseResponse } from "../lib/a
 import AddPurchaseForm from "./AddPurchaseForm";
 import PurchaseList from "./PurchaseList";
 import BalancesViewByNetwork from "./BalancesViewByNetwork";
+import SettlementHistory from "./SettlementHistory";
+import SettleUpForm from "./SettleUpForm"
 
 interface NetworkDetailsPageProps {
     networkId: number;
@@ -16,6 +18,7 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
     const [purchases, setPurchases] = useState<PurchaseResponse[]>([]);
     const [balances, setBalances] = useState<BalanceResponse[]>([]);
     const [loading, setLoading] = useState(true);
+    const [settlementRefreshKey, setSettlementRefreshKey] = useState(0);
 
     async function loadData() {
         const [membersData, purchasesData, balancesData] = await Promise.all([
@@ -60,6 +63,19 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
                 balances={balances}
                 currentUserId={currentUserId}
                 members={members}
+            />
+            <SettleUpForm
+                networkId={networkId}
+                members={members}
+                onSettled={() => {
+                    setSettlementRefreshKey((k) => k + 1);
+                    loadData();
+                }}
+            />
+            <SettlementHistory
+                networkId={networkId}
+                members={members}
+                refreshKey={settlementRefreshKey}
             />
         </div>
     );

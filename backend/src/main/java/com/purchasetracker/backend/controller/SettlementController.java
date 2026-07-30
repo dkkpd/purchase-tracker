@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/networks/{networkId}/settlements")
 public class SettlementController {
@@ -25,6 +27,11 @@ public class SettlementController {
     ) {
         SettlementResponse response = settlementService.recordSettlement(networkId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SettlementResponse>> getSettlements(@PathVariable Long networkId) {
+        return ResponseEntity.ok(settlementService.getSettlementsForNetwork(networkId));
     }
 
 }

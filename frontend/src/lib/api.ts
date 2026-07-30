@@ -112,6 +112,22 @@ export interface MyBalanceResponse {
     amount: number
 }
 
+export interface CreateSettlementRequest {
+    paidTo: number
+    amount: number
+    note?: string
+}
+
+export interface SettlementResponse {
+    id: number
+    networkId: number
+    paidById: number
+    paidToId: number
+    amount: number
+    note: string | null
+    settledAt: string
+}
+
 
 export async function register(data: RegisterRequest): Promise<RegisterResponse> {
     const response = await api.post<RegisterResponse>("/auth/register", data);
@@ -179,6 +195,19 @@ export async function getNetworkBalances(networkId: number): Promise<BalanceResp
 
 export async function getMyBalances(): Promise<MyBalanceResponse[]> {
     const response = await api.get<MyBalanceResponse[]>("/users/me/balances");
+    return response.data;
+}
+
+export async function recordSettlement(
+    networkId: number,
+    data: CreateSettlementRequest
+): Promise<SettlementResponse> {
+    const response = await api.post<SettlementResponse>(`/networks/${networkId}/settlements`, data);
+    return response.data;
+}
+
+export async function getSettlements(networkId: number): Promise<SettlementResponse[]> {
+    const response = await api.get<SettlementResponse[]>(`/networks/${networkId}/settlements`);
     return response.data;
 }
 

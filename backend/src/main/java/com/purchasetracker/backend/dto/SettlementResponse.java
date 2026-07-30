@@ -9,6 +9,7 @@ public record SettlementResponse(
         Long paidById,
         Long paidToId,
         BigDecimal amount,
+        String note,
         Instant settledAt
 ) {
 }

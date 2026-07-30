@@ -59,7 +59,7 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
 
             <input
                 type = "text"
-                placeholder="Description (e.g. Walmart Groceries)"
+                placeholder="Description (e.g. Groceries)"
                 value = {description}
                 onChange={(e) => setDescription(e.target.value)}
             />
