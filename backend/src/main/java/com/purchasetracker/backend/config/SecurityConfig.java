@@ -2,6 +2,7 @@ package com.purchasetracker.backend.config;
 
 import com.purchasetracker.backend.security.JwtAuthFilter;
 import com.purchasetracker.backend.security.RateLimitFilter;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.Arrays;
 
 
 @Configuration
@@ -52,13 +54,20 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Value("${app.cors.allowed-origin}")
-    private String allowedOrigin;
-
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
+    
+    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
+        List<String> allowedOriginsList = Arrays.stream(allowedOrigins.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toList();
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(allowedOrigin));
+        configuration.setAllowedOrigins(allowedOriginsList);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
