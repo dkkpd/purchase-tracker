@@ -1,4 +1,5 @@
 import type { MyBalanceResponse } from "../lib/api";
+import { CheckIcon } from "./icons";
 import styles from "./MyBalancesSummary.module.css";
 
 interface MyBalancesSummaryProps {
@@ -13,7 +14,12 @@ function MyBalancesSummary({ currentUserId, balances, loading }: MyBalancesSumma
     }
 
     if (balances.length === 0) {
-        return <p className="pt-text-muted">You're all settled across all networks!</p>;
+        return (
+            <div className="pt-settled-banner">
+                <span className="pt-settled-icon"><CheckIcon /></span>
+                <p className="pt-settled-text">You're all settled across all networks!</p>
+            </div>
+        );
     }
 
     return (

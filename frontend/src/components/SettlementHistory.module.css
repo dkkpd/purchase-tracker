@@ -1,9 +1,7 @@
-.settlementRow {
+.settlementRow,
+.settlementRowWithNote {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
   gap: var(--space-3);
-  flex-wrap: wrap;
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -11,8 +9,152 @@
   font-size: var(--font-size-sm);
 }
 
+.settlementRow {
+  align-items: center;
+}
+
+.settlementRowWithNote {
+  align-items: flex-start;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+.settlementMain,
+.settlementMainWithNote {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.settlementMainWithNote {
+  gap: var(--space-2);
+}
+
+.settlementLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.settlementParties {
+  color: var(--color-text);
+}
+
+.settlementAside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.settlementMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.settlementNote {
+  font-style: italic;
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+}
+
 .settlementTime {
   font-size: var(--font-size-xs);
   color: var(--color-text-subtle);
   white-space: nowrap;
+  margin-left: auto;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  align-self: center;
+  background: transparent;
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.toggleBtn:hover {
+  background: var(--color-accent-bg);
+}
+
+.toggleBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.toggleIcon {
+  transition: transform 0.15s ease;
+}
+
+.toggleIconExpanded {
+  transform: rotate(180deg);
+  transition: transform 0.15s ease;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.pageBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: var(--color-accent-bg);
+  border-color: var(--color-accent-border);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.pageInfo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  min-width: 6rem;
+  text-align: center;
 }

@@ -206,3 +206,83 @@
   flex-direction: column;
   gap: var(--space-3);
 }
+
+/* "All settled up" reward treatment — shared so every empty-balance state
+   looks identical, whether scoped to one network or all of them. */
+.pt-settled-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-lg);
+}
+
+.pt-settled-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+.pt-settled-text {
+  color: var(--color-success);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Small icon-only button, e.g. copy-to-clipboard triggers */
+.pt-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.pt-icon-btn:hover {
+  background: var(--color-accent-bg);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent);
+}
+
+.pt-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.pt-icon-btn.pt-icon-btn-success {
+  color: var(--color-success);
+  border-color: var(--color-success-border);
+  background: var(--color-success-bg);
+}
+
+/* Bold, pill-shaped amount badge — reuses the same visual language as the
+   invite-code pill so both "chip" patterns in the app stay consistent. */
+.pt-badge-success {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  white-space: nowrap;
+}

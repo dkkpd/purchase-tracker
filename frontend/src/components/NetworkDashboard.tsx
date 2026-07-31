@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createNetwork, joinNetwork, getMyNetworks } from "../lib/api";
 import type { NetworkResponse } from "../lib/api";
 import { getErrorMessage } from "../lib/errors";
+import { ChevronRightIcon, CopyIcon, CheckIcon } from "./icons";
 import styles from "./NetworkDashboard.module.css";
 
 interface NetworkDashboardProps {
@@ -16,6 +17,7 @@ const [error, setError] = useState<string | null>(null);
 
 const [newNetworkName, setNewNetworkName] = useState("");
 const [inviteCodeInput, setInviteCodeInput] = useState("");
+const [copiedId, setCopiedId] = useState<number | null>(null);
 
 async function loadNetworks() {
     try {
@@ -65,6 +67,16 @@ function handleApiError(error: unknown) {
     setError(getErrorMessage(error, "Something went wrong"));
 }
 
+function handleCopyInviteCode(event: React.MouseEvent, network: NetworkResponse) {
+    event.stopPropagation();
+    navigator.clipboard.writeText(network.inviteCode).then(() => {
+        setCopiedId(network.id);
+        setTimeout(() => setCopiedId((current) => (current === network.id ? null : current)), 1500);
+    }).catch((error) => {
+        console.error("Failed to copy invite code:", error);
+    });
+}
+
 if (loading) {
     return <p className="pt-text-muted">Loading your networks...</p>;
 }
@@ -80,8 +92,22 @@ return (
             <ul className="pt-list">
                 {networks.map((network) => (
                     <li key={network.id} className={styles.networkItem}>
-                        <button className={styles.networkNameBtn} onClick={() => onSelectNetwork(network.id)}>{network.name}</button>
-                        <span className={styles.inviteCode}>invite code: <strong>{network.inviteCode}</strong></span>
+                        <button className={styles.networkNameBtn} onClick={() => onSelectNetwork(network.id)}>
+                            <span>{network.name}</span>
+                            <ChevronRightIcon className={styles.chevron} />
+                        </button>
+                        <div className={styles.inviteCodeGroup}>
+                            <span className={styles.inviteCode}>invite code: <strong>{network.inviteCode}</strong></span>
+                            <button
+                                type="button"
+                                className={`pt-icon-btn ${copiedId === network.id ? "pt-icon-btn-success" : ""}`}
+                                onClick={(e) => handleCopyInviteCode(e, network)}
+                                title="Copy invite code"
+                                aria-label="Copy invite code"
+                            >
+                                {copiedId === network.id ? <CheckIcon /> : <CopyIcon />}
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>

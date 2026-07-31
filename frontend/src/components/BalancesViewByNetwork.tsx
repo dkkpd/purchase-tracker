@@ -1,4 +1,5 @@
 import type { BalanceResponse, MemberResponse } from "../lib/api";
+import { CheckIcon } from "./icons";
 import styles from "./BalancesViewByNetwork.module.css";
 
 interface BalancesViewByNetworkProps {
@@ -20,7 +21,10 @@ function BalancesViewByNetwork({ balances, currentUserId, members }: BalancesVie
         return (
             <div className="pt-stack-sm">
                 <h3>Balances in This Network</h3>
-                <p className="pt-text-muted">{"You're all settled up in this network."}</p>
+                <div className="pt-settled-banner">
+                    <span className="pt-settled-icon"><CheckIcon /></span>
+                    <p className="pt-settled-text">{"You're all settled up in this network."}</p>
+                </div>
             </div>
         );
     }
