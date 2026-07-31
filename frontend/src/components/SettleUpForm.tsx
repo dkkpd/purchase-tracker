@@ -47,14 +47,14 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
     if (!isOpen) {
         return (
             <button type="button" className="pt-btn-add" onClick={() => setIsOpen(true)}>
-                + Settle Up
+                + Record Payment
             </button>
         );
     }
 
     return (
         <form onSubmit={handleSubmit} className="pt-card pt-stack">
-            <h3>Settle Up</h3>
+            <h3>Make a Payment</h3>
 
             <div className="pt-field">
                 <label htmlFor="settle-paid-to" className="pt-label">Paid to</label>

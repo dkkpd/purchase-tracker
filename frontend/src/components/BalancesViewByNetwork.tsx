@@ -6,9 +6,10 @@ interface BalancesViewByNetworkProps {
     balances: BalanceResponse[];
     currentUserId: number;
     members: MemberResponse[];
+    children?: React.ReactNode;
 }
 
-function BalancesViewByNetwork({ balances, currentUserId, members }: BalancesViewByNetworkProps) {
+function BalancesViewByNetwork({ balances, currentUserId, members, children }: BalancesViewByNetworkProps) {
     function nameFor(userId: number): string {
         return members.find((m) => m.id === userId)?.name ?? `User #${userId}`;
     }
@@ -41,6 +42,7 @@ function BalancesViewByNetwork({ balances, currentUserId, members }: BalancesVie
                     </li>
                 ))}
             </ul>
+            {children}
         </div>
     );
 }

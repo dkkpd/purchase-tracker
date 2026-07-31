@@ -62,6 +62,19 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
         return <p className="pt-text-muted">Loading...</p>;
     }
 
+    const userOwesSomeone = balances.some((b) => b.owedBy === currentUserId);
+
+    const settleUpForm = (
+        <SettleUpForm
+            networkId={networkId}
+            members={members}
+            onSettled={() => {
+                setSettlementRefreshKey((k) => k + 1);
+                loadData();
+            }}
+        />
+    );
+
     return (
         <div className={styles.page}>
             {network && (
@@ -88,7 +101,9 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
                         balances={balances}
                         currentUserId={currentUserId}
                         members={members}
-                    />
+                    >
+                        {userOwesSomeone && settleUpForm}
+                    </BalancesViewByNetwork>
                 </div>
             </div>
 
@@ -118,16 +133,11 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
                         refreshKey={settlementRefreshKey}
                     />
                 </div>
-                <div className={styles.group}>
-                    <SettleUpForm
-                        networkId={networkId}
-                        members={members}
-                        onSettled={() => {
-                            setSettlementRefreshKey((k) => k + 1);
-                            loadData();
-                        }}
-                    />
-                </div>
+                {!userOwesSomeone && (
+                    <div className={styles.group}>
+                        {settleUpForm}
+                    </div>
+                )}
             </div>
         </div>
     );
