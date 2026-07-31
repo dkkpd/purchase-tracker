@@ -31,33 +31,35 @@ function LoginForm({onLoginSuccess}: LoginFormProps) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="pt-card pt-stack">
 
             <h2>Login</h2>
 
-            <div>
-                <label htmlFor="login-email">Email</label>
+            <div className="pt-field">
+                <label htmlFor="login-email" className="pt-label">Email</label>
                 <input
                     id="login-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="pt-input"
                 />
             </div>
 
-            <div>
-                <label htmlFor="login-password">Password</label>
+            <div className="pt-field">
+                <label htmlFor="login-password" className="pt-label">Password</label>
                 <input
                     id="login-password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="pt-input"
                 />
             </div>
 
-            <button type="submit">Login</button>
+            <button type="submit" className="pt-btn pt-btn-primary">Login</button>
 
-            {error && <p style={{color: "red"}}>{error}</p>}
+            {error && <p className="pt-banner pt-banner-error">{error}</p>}
         </form>
     );
 }

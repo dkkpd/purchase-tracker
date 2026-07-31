@@ -30,41 +30,44 @@ function RegisterForm() {
 
     return (
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="pt-card pt-stack">
             <h2>Register</h2>
-            <div>
-                <label htmlFor="name">Name</label>
+            <div className="pt-field">
+                <label htmlFor="name" className="pt-label">Name</label>
                 <input
                     id="name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    className="pt-input"
                 />
             </div>
 
-            <div>
-                <label htmlFor="email">Email</label>
+            <div className="pt-field">
+                <label htmlFor="email" className="pt-label">Email</label>
                 <input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="pt-input"
                 />
             </div>
 
-            <div>
-                <label htmlFor="password">Password</label>
+            <div className="pt-field">
+                <label htmlFor="password" className="pt-label">Password</label>
                 <input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="pt-input"
                 />
             </div>
 
-            <button type="submit">Register</button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {success && <p style={{ color: "green" }}>Registered successfully!</p>}
+            <button type="submit" className="pt-btn pt-btn-primary">Register</button>
+            {error && <p className="pt-banner pt-banner-error">{error}</p>}
+            {success && <p className="pt-banner pt-banner-success">Registered successfully!</p>}
         </form>
     );
 

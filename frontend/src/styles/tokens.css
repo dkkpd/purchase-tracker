@@ -1,0 +1,106 @@
+/* Design tokens shared by every component's CSS module.
+   Light theme is the default; dark theme overrides via prefers-color-scheme. */
+
+:root {
+  /* Color: neutral surface & text */
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-surface-hover: #fafafa;
+  --color-border: #e2e2e6;
+  --color-border-strong: #cfcfd6;
+
+  --color-text: #1f2024;
+  --color-text-muted: #6b6d76;
+  --color-text-subtle: #94969e;
+
+  /* Color: accent (primary actions / links) */
+  --color-accent: #3a5bfd;
+  --color-accent-hover: #2f4bd6;
+  --color-accent-bg: rgba(58, 91, 253, 0.08);
+  --color-accent-border: rgba(58, 91, 253, 0.35);
+
+  /* Color: semantic */
+  --color-danger: #d92d20;
+  --color-danger-hover: #b42318;
+  --color-danger-bg: rgba(217, 45, 32, 0.08);
+  --color-danger-border: rgba(217, 45, 32, 0.3);
+
+  --color-success: #12805c;
+  --color-success-bg: rgba(18, 128, 92, 0.08);
+  --color-success-border: rgba(18, 128, 92, 0.3);
+
+  --color-focus-ring: rgba(58, 91, 253, 0.35);
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(16, 16, 20, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 16, 20, 0.06);
+  --shadow-lg: 0 12px 24px rgba(16, 16, 20, 0.08);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.25rem;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+
+  /* Layout */
+  --max-content-width: 760px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #14151a;
+    --color-surface: #1c1d24;
+    --color-surface-hover: #21222a;
+    --color-border: #2c2d36;
+    --color-border-strong: #3a3b46;
+
+    --color-text: #eeeef0;
+    --color-text-muted: #a4a6b0;
+    --color-text-subtle: #75777f;
+
+    --color-accent: #7d93ff;
+    --color-accent-hover: #97a8ff;
+    --color-accent-bg: rgba(125, 147, 255, 0.12);
+    --color-accent-border: rgba(125, 147, 255, 0.4);
+
+    --color-danger: #f87168;
+    --color-danger-hover: #ff8b83;
+    --color-danger-bg: rgba(248, 113, 104, 0.12);
+    --color-danger-border: rgba(248, 113, 104, 0.35);
+
+    --color-success: #4ade9a;
+    --color-success-bg: rgba(74, 222, 154, 0.12);
+    --color-success-border: rgba(74, 222, 154, 0.35);
+
+    --color-focus-ring: rgba(125, 147, 255, 0.4);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.45);
+  }
+}

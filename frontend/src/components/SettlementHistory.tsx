@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getSettlements } from "../lib/api";
 import type { SettlementResponse } from "../lib/api";
+import styles from "./SettlementHistory.module.css";
 
 interface SettlementHistoryProps {
     networkId: number;
@@ -31,17 +32,18 @@ function SettlementHistory({ networkId, members, refreshKey }: SettlementHistory
     }, [networkId, refreshKey]);
 
     if (settlements.length === 0) {
-        return <p>No payments recorded yet.</p>;
+        return <p className="pt-text-muted">No payments recorded yet.</p>;
     }
 
     return (
-        <ul>
+        <ul className="pt-list">
             {settlements.map((s) => (
-                <li key={s.id}>
-                    {nameFor(s.paidById)} paid {nameFor(s.paidToId)} ${s.amount.toFixed(2)}
-                    {s.note ? ` - "${s.note}"` : ""}
-                    {" - "}
-                    {formatSettledAt(s.settledAt)}
+                <li key={s.id} className={styles.settlementRow}>
+                    <span>
+                        {nameFor(s.paidById)} paid {nameFor(s.paidToId)} ${s.amount.toFixed(2)}
+                        {s.note ? ` - "${s.note}"` : ""}
+                    </span>
+                    <span className={styles.settlementTime}>{formatSettledAt(s.settledAt)}</span>
                 </li>
             ))}
         </ul>

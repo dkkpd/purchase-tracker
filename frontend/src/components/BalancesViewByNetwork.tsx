@@ -1,4 +1,5 @@
 import type { BalanceResponse, MemberResponse } from "../lib/api";
+import styles from "./BalancesViewByNetwork.module.css";
 
 interface BalancesViewByNetworkProps {
     balances: BalanceResponse[];
@@ -16,16 +17,16 @@ function BalancesViewByNetwork({ balances, currentUserId, members }: BalancesVie
     );
 
     if (myBalances.length === 0) {
-        return <p>{"You're all settled up in this network."}</p>;
+        return <p className="pt-text-muted">{"You're all settled up in this network."}</p>;
     }
 
     return (
-        <ul>
+        <ul className="pt-list">
             {myBalances.map((balance) => (
-                <li key={`${balance.owedBy}-${balance.owedTo}`}>
+                <li key={`${balance.owedBy}-${balance.owedTo}`} className={styles.balanceRow}>
                     {balance.owedBy === currentUserId
-                        ? `You owe ${nameFor(balance.owedTo)} $${balance.amount.toFixed(2)}`
-                        : `${nameFor(balance.owedBy)} owes you $${balance.amount.toFixed(2)}`}
+                        ? <span className="pt-text-danger">You owe {nameFor(balance.owedTo)} ${balance.amount.toFixed(2)}</span>
+                        : <span className="pt-text-success">{nameFor(balance.owedBy)} owes you ${balance.amount.toFixed(2)}</span>}
                 </li>
             ))}
         </ul>

@@ -6,6 +6,7 @@ import PurchaseList from "./PurchaseList";
 import BalancesViewByNetwork from "./BalancesViewByNetwork";
 import SettlementHistory from "./SettlementHistory";
 import SettleUpForm from "./SettleUpForm"
+import styles from "./NetworkDetailsPage.module.css";
 
 interface NetworkDetailsPageProps {
     networkId: number;
@@ -43,40 +44,50 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
     }
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <p className="pt-text-muted">Loading...</p>;
     }
 
     return (
-        <div>
-            <PurchaseList
-                purchases={purchases}
-                currentUserId={currentUserId}
-                members={members}
-                onDelete={handleDelete}
-            />
-            <AddPurchaseForm
-                networkId={networkId}
-                members={members}
-                onPurchaseCreated={loadData}
-            />
-            <BalancesViewByNetwork
-                balances={balances}
-                currentUserId={currentUserId}
-                members={members}
-            />
-            <SettleUpForm
-                networkId={networkId}
-                members={members}
-                onSettled={() => {
-                    setSettlementRefreshKey((k) => k + 1);
-                    loadData();
-                }}
-            />
-            <SettlementHistory
-                networkId={networkId}
-                members={members}
-                refreshKey={settlementRefreshKey}
-            />
+        <div className={styles.page}>
+            <div className={styles.section}>
+                <PurchaseList
+                    purchases={purchases}
+                    currentUserId={currentUserId}
+                    members={members}
+                    onDelete={handleDelete}
+                />
+            </div>
+            <div className={styles.section}>
+                <AddPurchaseForm
+                    networkId={networkId}
+                    members={members}
+                    onPurchaseCreated={loadData}
+                />
+            </div>
+            <div className={styles.section}>
+                <BalancesViewByNetwork
+                    balances={balances}
+                    currentUserId={currentUserId}
+                    members={members}
+                />
+            </div>
+            <div className={styles.section}>
+                <SettleUpForm
+                    networkId={networkId}
+                    members={members}
+                    onSettled={() => {
+                        setSettlementRefreshKey((k) => k + 1);
+                        loadData();
+                    }}
+                />
+            </div>
+            <div className={styles.section}>
+                <SettlementHistory
+                    networkId={networkId}
+                    members={members}
+                    refreshKey={settlementRefreshKey}
+                />
+            </div>
         </div>
     );
 }

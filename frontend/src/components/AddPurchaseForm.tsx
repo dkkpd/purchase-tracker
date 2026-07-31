@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createPurchase } from "../lib/api";
 import type { PurchaseItemRequest} from "../lib/api";
 import { getErrorMessage } from "../lib/errors";
+import styles from "./AddPurchaseForm.module.css";
 
 interface AddPurchaseFormProps {
     networkId: number;
@@ -53,7 +54,7 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
     }
 
     return (
-        <form onSubmit = {handleSubmit}>
+        <form onSubmit = {handleSubmit} className="pt-card pt-stack">
 
             <h3>Log a Purchase</h3>
 
@@ -62,51 +63,59 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
                 placeholder="Description (e.g. Groceries)"
                 value = {description}
                 onChange={(e) => setDescription(e.target.value)}
+                className="pt-input"
             />
 
             <input
                 type = "date"
                 value = {purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
+                className="pt-input"
             />
 
-            <h4>Items</h4>
-            {items.map((item, index) => (
-                <div key={index}>
-                    <input
-                        type="text"
-                        placeholder="Item description"
-                        value = {item.description}
-                        onChange = {(e) => updateItem(index, {description: e.target.value})}
-                    />
-                    <input
-                        type="number"
-                        step="0.01"
-                        placeholder="Cost"
-                        value={item.cost}
-                        onChange={(e) => updateItem(index, {cost: parseFloat(e.target.value)})}
-                    />
-                    <select
-                        value={item.recipientId}
-                        onChange = {(e) => updateItem(index, {recipientId: Number(e.target.value) })}
-                    >
-                        {members.map((member) => (
-                            <option key={member.id} value={member.id}>
-                                {member.name}
-                            </option>
-                        ))}
-                    </select>
-                    {items.length > 1 && (
-                        <button type ="button" onClick={() => removeItemRow(index)}>Remove</button>
-                    )}
-                </div>
-            ))}
+            <h4 className={styles.itemsHeader}>Items</h4>
+            <div className="pt-stack-sm">
+                {items.map((item, index) => (
+                    <div key={index} className={styles.itemRow}>
+                        <input
+                            type="text"
+                            placeholder="Item description"
+                            value = {item.description}
+                            onChange = {(e) => updateItem(index, {description: e.target.value})}
+                            className="pt-input"
+                        />
+                        <input
+                            type="number"
+                            step="0.01"
+                            placeholder="Cost"
+                            value={item.cost}
+                            onChange={(e) => updateItem(index, {cost: parseFloat(e.target.value)})}
+                            className="pt-input"
+                        />
+                        <select
+                            value={item.recipientId}
+                            onChange = {(e) => updateItem(index, {recipientId: Number(e.target.value) })}
+                            className="pt-input"
+                        >
+                            {members.map((member) => (
+                                <option key={member.id} value={member.id}>
+                                    {member.name}
+                                </option>
+                            ))}
+                        </select>
+                        {items.length > 1 && (
+                            <button type ="button" className="pt-btn pt-btn-danger pt-btn-sm" onClick={() => removeItemRow(index)}>Remove</button>
+                        )}
+                    </div>
+                ))}
+            </div>
 
-            <button type = "button" onClick={() => addItemRow()}>+ Add another item</button>
+            <div className={styles.actionsRow}>
+                <button type = "button" className="pt-btn pt-btn-secondary" onClick={() => addItemRow()}>+ Add another item</button>
+                <button type = "submit" className="pt-btn pt-btn-primary">Save Purchase</button>
+            </div>
 
-            <button type = "submit">Save Purchase</button>
-
-            {error && <p style={{color: "red"}}>{error}</p>}
+            {error && <p className="pt-banner pt-banner-error">{error}</p>}
 
         </form>
     );

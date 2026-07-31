@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import styles from "./App.module.css";
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import { isLoggedIn, clearToken } from "./lib/auth";
@@ -79,41 +80,52 @@ function App() {
   }
 
   return (
-    <div>
-      <h1>Purchase Tracker</h1>
-      <p>Health Status: {health}</p>
-      {loggedIn ? (
-        <>
-          <p>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
-          <button type="button" onClick={handleLogout}>Logout</button>
-          {selectedNetworkId === null ? (
-              <div>
-              <MyBalanceSummary
-                currentUserId={currentUserId ?? 0}
-                balances={myBalances}
-                loading={myBalancesLoading}
-              />
-              <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
-            </div>
-          ) : (
-            <div>
-              <button type="button" onClick={() => setSelectedNetworkId(null)}>
-                &larr; Back to networks
-              </button>
-              <NetworkDetailPage
-                networkId={selectedNetworkId}
-                currentUserId={currentUserId ?? 0}
-                onBalancesChanged={loadMyBalances}
-              />
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <RegisterForm />
-          <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
-        </>
-      )}
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.brand}>
+          <h1>Purchase Tracker</h1>
+          <p className={styles.health}>Health Status: {health}</p>
+        </div>
+        {loggedIn && (
+          <div className={styles.userInfo}>
+            <p className={styles.userText}>Signed in as {userName ?? "..."} ({email ?? "..."})</p>
+            <button type="button" className="pt-btn pt-btn-secondary" onClick={handleLogout}>Logout</button>
+          </div>
+        )}
+      </header>
+
+      <main className={styles.main}>
+        {loggedIn ? (
+          <>
+            {selectedNetworkId === null ? (
+              <div className="pt-stack">
+                <MyBalanceSummary
+                  currentUserId={currentUserId ?? 0}
+                  balances={myBalances}
+                  loading={myBalancesLoading}
+                />
+                <NetworkDashboard onSelectNetwork={setSelectedNetworkId} />
+              </div>
+            ) : (
+              <div className="pt-stack">
+                <button type="button" className="pt-btn pt-btn-ghost" onClick={() => setSelectedNetworkId(null)}>
+                  &larr; Back to networks
+                </button>
+                <NetworkDetailPage
+                  networkId={selectedNetworkId}
+                  currentUserId={currentUserId ?? 0}
+                  onBalancesChanged={loadMyBalances}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <div className={styles.authSection}>
+            <RegisterForm />
+            <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
+          </div>
+        )}
+      </main>
     </div>
   );
 }

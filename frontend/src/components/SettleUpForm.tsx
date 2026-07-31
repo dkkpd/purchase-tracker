@@ -33,10 +33,10 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="pt-card pt-stack">
             <h3>Settle Up</h3>
 
-            <select value={paidTo} onChange={(e) => setPaidTo(Number(e.target.value))}>
+            <select value={paidTo} onChange={(e) => setPaidTo(Number(e.target.value))} className="pt-input">
                 {members.map((member) => (
                     <option key={member.id} value={member.id}>
                         {member.name}
@@ -49,6 +49,7 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
                 step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                className="pt-input"
             />
 
             <input
@@ -56,11 +57,12 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
                 placeholder="Note (optional)"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
+                className="pt-input"
             />
 
-            <button type="submit">Record Payment</button>
+            <button type="submit" className="pt-btn pt-btn-primary">Record Payment</button>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="pt-banner pt-banner-error">{error}</p>}
         </form>
     );
 }
