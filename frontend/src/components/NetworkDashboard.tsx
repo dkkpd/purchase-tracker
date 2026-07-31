@@ -47,7 +47,7 @@ async function handleCreate(event: React.SubmitEvent) {
 
 async function handleJoin(event: React.SubmitEvent) {
     
-    event.preventDefault;
+    event.preventDefault();
     setError(null);
 
     try {
