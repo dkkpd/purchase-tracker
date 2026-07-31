@@ -32,21 +32,29 @@ function SettlementHistory({ networkId, members, refreshKey }: SettlementHistory
     }, [networkId, refreshKey]);
 
     if (settlements.length === 0) {
-        return <p className="pt-text-muted">No payments recorded yet.</p>;
+        return (
+            <div className="pt-stack-sm">
+                <h3>Payment History</h3>
+                <p className="pt-text-muted">No payments recorded yet.</p>
+            </div>
+        );
     }
 
     return (
-        <ul className="pt-list">
-            {settlements.map((s) => (
-                <li key={s.id} className={styles.settlementRow}>
-                    <span>
-                        {nameFor(s.paidById)} paid {nameFor(s.paidToId)} ${s.amount.toFixed(2)}
-                        {s.note ? ` - "${s.note}"` : ""}
-                    </span>
-                    <span className={styles.settlementTime}>{formatSettledAt(s.settledAt)}</span>
-                </li>
-            ))}
-        </ul>
+        <div className="pt-stack-sm">
+            <h3>Payment History</h3>
+            <ul className="pt-list">
+                {settlements.map((s) => (
+                    <li key={s.id} className={styles.settlementRow}>
+                        <span>
+                            {nameFor(s.paidById)} paid {nameFor(s.paidToId)} ${s.amount.toFixed(2)}
+                            {s.note ? ` - "${s.note}"` : ""}
+                        </span>
+                        <span className={styles.settlementTime}>{formatSettledAt(s.settledAt)}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 

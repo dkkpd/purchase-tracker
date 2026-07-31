@@ -4,6 +4,12 @@ import type { PurchaseItemRequest} from "../lib/api";
 import { getErrorMessage } from "../lib/errors";
 import styles from "./AddPurchaseForm.module.css";
 
+function todayIsoDate(): string {
+    // Computed from local time (not UTC) so the default doesn't jump a day early/late near midnight.
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 interface AddPurchaseFormProps {
     networkId: number;
     members: { id: number; name: string }[]
@@ -11,8 +17,9 @@ interface AddPurchaseFormProps {
 }
 
 function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFormProps) {
+    const [isOpen, setIsOpen] = useState(false);
     const [description, setDescription] = useState("");
-    const [purchaseDate, setPurchaseDate] = useState("");
+    const [purchaseDate, setPurchaseDate] = useState(todayIsoDate());
     const [items, setItems] = useState<PurchaseItemRequest[]>([{
         description: "", cost: 0, recipientId: members[0]?.id ?? 0}, //use the first member's ID as a sensible default, or 0 if there are somehow no members at all.
     ]);
@@ -38,19 +45,38 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
         setItems((prevState) => prevState.filter((_, i) => i !== index));
     }
 
+    function resetForm() {
+        setDescription("");
+        setPurchaseDate(todayIsoDate());
+        setItems([{description: "", cost: 0, recipientId: members[0]?.id ?? 0}]);
+        setError(null);
+    }
+
+    function handleCancel() {
+        resetForm();
+        setIsOpen(false);
+    }
+
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         setError(null);
 
         try {
             await createPurchase(networkId, {description, purchaseDate, items});
-            setDescription("");
-            setPurchaseDate("");
-            setItems([{description: "", cost: 0, recipientId: members[0]?.id ?? 0}]);
+            resetForm();
+            setIsOpen(false);
             onPurchaseCreated();
         } catch (error) {
             setError(getErrorMessage(error, "Something went wrong creating purchase."));
         }
+    }
+
+    if (!isOpen) {
+        return (
+            <button type="button" className="pt-btn-add" onClick={() => setIsOpen(true)}>
+                + Log a Purchase
+            </button>
+        );
     }
 
     return (
@@ -112,7 +138,10 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
 
             <div className={styles.actionsRow}>
                 <button type = "button" className="pt-btn pt-btn-secondary" onClick={() => addItemRow()}>+ Add another item</button>
-                <button type = "submit" className="pt-btn pt-btn-primary">Save Purchase</button>
+                <div className={styles.actionsGroup}>
+                    <button type = "button" className="pt-btn pt-btn-secondary" onClick={handleCancel}>Cancel</button>
+                    <button type = "submit" className="pt-btn pt-btn-primary">Save Purchase</button>
+                </div>
             </div>
 
             {error && <p className="pt-banner pt-banner-error">{error}</p>}

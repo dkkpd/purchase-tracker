@@ -17,19 +17,27 @@ function BalancesViewByNetwork({ balances, currentUserId, members }: BalancesVie
     );
 
     if (myBalances.length === 0) {
-        return <p className="pt-text-muted">{"You're all settled up in this network."}</p>;
+        return (
+            <div className="pt-stack-sm">
+                <h3>Balances in This Network</h3>
+                <p className="pt-text-muted">{"You're all settled up in this network."}</p>
+            </div>
+        );
     }
 
     return (
-        <ul className="pt-list">
-            {myBalances.map((balance) => (
-                <li key={`${balance.owedBy}-${balance.owedTo}`} className={styles.balanceRow}>
-                    {balance.owedBy === currentUserId
-                        ? <span className="pt-text-danger">You owe {nameFor(balance.owedTo)} ${balance.amount.toFixed(2)}</span>
-                        : <span className="pt-text-success">{nameFor(balance.owedBy)} owes you ${balance.amount.toFixed(2)}</span>}
-                </li>
-            ))}
-        </ul>
+        <div className="pt-stack-sm">
+            <h3>Balances in This Network</h3>
+            <ul className="pt-list">
+                {myBalances.map((balance) => (
+                    <li key={`${balance.owedBy}-${balance.owedTo}`} className={styles.balanceRow}>
+                        {balance.owedBy === currentUserId
+                            ? <span className="pt-text-danger">You owe {nameFor(balance.owedTo)} ${balance.amount.toFixed(2)}</span>
+                            : <span className="pt-text-success">{nameFor(balance.owedBy)} owes you ${balance.amount.toFixed(2)}</span>}
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 

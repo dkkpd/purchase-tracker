@@ -134,6 +134,36 @@
   font-size: var(--font-size-xs);
 }
 
+/* "Add new" trigger, styled as the same solid card block used for every other
+   surface in the app (list items, forms) so it reads as a natural next slot
+   rather than a visually distinct placeholder. */
+.pt-btn-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pt-btn-add:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-bg);
+}
+
+.pt-btn-add:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
 /* Feedback banners */
 .pt-banner {
   padding: var(--space-3) var(--space-4);

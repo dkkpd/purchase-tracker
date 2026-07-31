@@ -1,10 +1,16 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-7);
 }
 
-.section {
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.group {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);

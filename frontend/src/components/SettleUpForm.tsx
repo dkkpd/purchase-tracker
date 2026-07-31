@@ -9,10 +9,22 @@ interface SettleUpFormProps {
 }
 
 function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
+    const [isOpen, setIsOpen] = useState(false);
     const [paidTo, setPaidTo] = useState<number>(members[0]?.id ?? 0);
     const [amount, setAmount] = useState<number>(0);
     const [note, setNote] = useState("");
     const [error, setError] = useState<string | null>(null);
+
+    function resetForm() {
+        setAmount(0);
+        setNote("");
+        setError(null);
+    }
+
+    function handleCancel() {
+        resetForm();
+        setIsOpen(false);
+    }
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
@@ -24,12 +36,20 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
                 amount,
                 note: note || undefined,
             });
-            setAmount(0);
-            setNote("");
+            resetForm();
+            setIsOpen(false);
             onSettled();
         } catch (error) {
             setError(getErrorMessage(error, "Something went wrong. Please try again."));
         }
+    }
+
+    if (!isOpen) {
+        return (
+            <button type="button" className="pt-btn-add" onClick={() => setIsOpen(true)}>
+                + Settle Up
+            </button>
+        );
     }
 
     return (
@@ -60,7 +80,10 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
                 className="pt-input"
             />
 
-            <button type="submit" className="pt-btn pt-btn-primary">Record Payment</button>
+            <div className="pt-row">
+                <button type="button" className="pt-btn pt-btn-secondary" onClick={handleCancel}>Cancel</button>
+                <button type="submit" className="pt-btn pt-btn-primary">Record Payment</button>
+            </div>
 
             {error && <p className="pt-banner pt-banner-error">{error}</p>}
         </form>

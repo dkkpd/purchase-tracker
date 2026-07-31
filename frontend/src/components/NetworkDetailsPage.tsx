@@ -49,44 +49,52 @@ function NetworkDetailPage({ networkId, currentUserId, onBalancesChanged }: Netw
 
     return (
         <div className={styles.page}>
-            <div className={styles.section}>
-                <PurchaseList
-                    purchases={purchases}
-                    currentUserId={currentUserId}
-                    members={members}
-                    onDelete={handleDelete}
-                />
+            <div className={styles.zone}>
+                <div className={styles.group}>
+                    <BalancesViewByNetwork
+                        balances={balances}
+                        currentUserId={currentUserId}
+                        members={members}
+                    />
+                </div>
             </div>
-            <div className={styles.section}>
-                <AddPurchaseForm
-                    networkId={networkId}
-                    members={members}
-                    onPurchaseCreated={loadData}
-                />
+
+            <div className={styles.zone}>
+                <div className={styles.group}>
+                    <PurchaseList
+                        purchases={purchases}
+                        currentUserId={currentUserId}
+                        members={members}
+                        onDelete={handleDelete}
+                    />
+                </div>
+                <div className={styles.group}>
+                    <AddPurchaseForm
+                        networkId={networkId}
+                        members={members}
+                        onPurchaseCreated={loadData}
+                    />
+                </div>
             </div>
-            <div className={styles.section}>
-                <BalancesViewByNetwork
-                    balances={balances}
-                    currentUserId={currentUserId}
-                    members={members}
-                />
-            </div>
-            <div className={styles.section}>
-                <SettleUpForm
-                    networkId={networkId}
-                    members={members}
-                    onSettled={() => {
-                        setSettlementRefreshKey((k) => k + 1);
-                        loadData();
-                    }}
-                />
-            </div>
-            <div className={styles.section}>
-                <SettlementHistory
-                    networkId={networkId}
-                    members={members}
-                    refreshKey={settlementRefreshKey}
-                />
+
+            <div className={styles.zone}>
+                <div className={styles.group}>
+                    <SettlementHistory
+                        networkId={networkId}
+                        members={members}
+                        refreshKey={settlementRefreshKey}
+                    />
+                </div>
+                <div className={styles.group}>
+                    <SettleUpForm
+                        networkId={networkId}
+                        members={members}
+                        onSettled={() => {
+                            setSettlementRefreshKey((k) => k + 1);
+                            loadData();
+                        }}
+                    />
+                </div>
             </div>
         </div>
     );
