@@ -118,25 +118,33 @@ return (
         <div className={styles.formsGrid}>
             <form onSubmit={handleCreate} className="pt-card pt-stack">
                 <h3>Create a Network</h3>
-                <input
-                    type = "text"
-                    placeholder="Network Name"
-                    value = {newNetworkName}
-                    onChange={(e) => setNewNetworkName(e.target.value)}
-                    className="pt-input"
-                />
+                <div className="pt-field">
+                    <label htmlFor="create-network-name" className="pt-label">Network name</label>
+                    <input
+                        id="create-network-name"
+                        type="text"
+                        placeholder="e.g. Roommates"
+                        value={newNetworkName}
+                        onChange={(e) => setNewNetworkName(e.target.value)}
+                        className="pt-input"
+                    />
+                </div>
                 <button type="submit" className="pt-btn pt-btn-primary">Create Network</button>
             </form>
 
             <form onSubmit={handleJoin} className="pt-card pt-stack">
                 <h3>Join a Network</h3>
-                <input
-                    type = "text"
-                    placeholder="Invite Code"
-                    value = {inviteCodeInput}
-                    onChange={(e) => setInviteCodeInput(e.target.value)}
-                    className="pt-input"
-                />
+                <div className="pt-field">
+                    <label htmlFor="join-invite-code" className="pt-label">Invite code</label>
+                    <input
+                        id="join-invite-code"
+                        type="text"
+                        placeholder="e.g. ABC123XY"
+                        value={inviteCodeInput}
+                        onChange={(e) => setInviteCodeInput(e.target.value)}
+                        className="pt-input"
+                    />
+                </div>
                 <button type="submit" className="pt-btn pt-btn-primary">Join Network</button>
             </form>
         </div>

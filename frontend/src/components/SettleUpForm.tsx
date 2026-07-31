@@ -56,29 +56,47 @@ function SettleUpForm({ networkId, members, onSettled }: SettleUpFormProps) {
         <form onSubmit={handleSubmit} className="pt-card pt-stack">
             <h3>Settle Up</h3>
 
-            <select value={paidTo} onChange={(e) => setPaidTo(Number(e.target.value))} className="pt-input">
-                {members.map((member) => (
-                    <option key={member.id} value={member.id}>
-                        {member.name}
-                    </option>
-                ))}
-            </select>
+            <div className="pt-field">
+                <label htmlFor="settle-paid-to" className="pt-label">Paid to</label>
+                <select
+                    id="settle-paid-to"
+                    value={paidTo}
+                    onChange={(e) => setPaidTo(Number(e.target.value))}
+                    className="pt-input"
+                >
+                    {members.map((member) => (
+                        <option key={member.id} value={member.id}>
+                            {member.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-            <input
-                type="number"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="pt-input"
-            />
+            <div className="pt-field">
+                <label htmlFor="settle-amount" className="pt-label">Amount</label>
+                <input
+                    id="settle-amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    value={amount === 0 ? "" : amount}
+                    onChange={(e) => setAmount(e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)}
+                    className="pt-input"
+                />
+            </div>
 
-            <input
-                type="text"
-                placeholder="Note (optional)"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="pt-input"
-            />
+            <div className="pt-field">
+                <label htmlFor="settle-note" className="pt-label">Note (optional)</label>
+                <input
+                    id="settle-note"
+                    type="text"
+                    placeholder="e.g. Cash, Venmo"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="pt-input"
+                />
+            </div>
 
             <div className="pt-row">
                 <button type="button" className="pt-btn pt-btn-secondary" onClick={handleCancel}>Cancel</button>

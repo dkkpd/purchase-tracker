@@ -84,51 +84,80 @@ function AddPurchaseForm({networkId, members, onPurchaseCreated}: AddPurchaseFor
 
             <h3>Log a Purchase</h3>
 
-            <input
-                type = "text"
-                placeholder="Description (e.g. Groceries)"
-                value = {description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="pt-input"
-            />
+            <div className="pt-field">
+                <label htmlFor="purchase-description" className="pt-label">Description</label>
+                <input
+                    id="purchase-description"
+                    type="text"
+                    placeholder="e.g. Groceries"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="pt-input"
+                />
+            </div>
 
-            <input
-                type = "date"
-                value = {purchaseDate}
-                onChange={(e) => setPurchaseDate(e.target.value)}
-                className="pt-input"
-            />
+            <div className="pt-field">
+                <label htmlFor="purchase-date" className="pt-label">Purchase date</label>
+                <input
+                    id="purchase-date"
+                    type="date"
+                    value={purchaseDate}
+                    onChange={(e) => setPurchaseDate(e.target.value)}
+                    className="pt-input"
+                />
+            </div>
 
             <h4 className={styles.itemsHeader}>Items</h4>
             <div className="pt-stack-sm">
+                <div className={styles.itemColumnsHeader} aria-hidden="true">
+                    <span className="pt-label">Item description</span>
+                    <span className="pt-label">Cost</span>
+                    <span className="pt-label">Paid for</span>
+                    <span />
+                </div>
                 {items.map((item, index) => (
                     <div key={index} className={styles.itemRow}>
-                        <input
-                            type="text"
-                            placeholder="Item description"
-                            value = {item.description}
-                            onChange = {(e) => updateItem(index, {description: e.target.value})}
-                            className="pt-input"
-                        />
-                        <input
-                            type="number"
-                            step="0.01"
-                            placeholder="Cost"
-                            value={item.cost}
-                            onChange={(e) => updateItem(index, {cost: parseFloat(e.target.value)})}
-                            className="pt-input"
-                        />
-                        <select
-                            value={item.recipientId}
-                            onChange = {(e) => updateItem(index, {recipientId: Number(e.target.value) })}
-                            className="pt-input"
-                        >
-                            {members.map((member) => (
-                                <option key={member.id} value={member.id}>
-                                    {member.name}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="pt-field">
+                            <label htmlFor={`purchase-item-description-${index}`} className={`pt-label ${styles.mobileLabel}`}>Item description</label>
+                            <input
+                                id={`purchase-item-description-${index}`}
+                                type="text"
+                                placeholder="e.g. Milk"
+                                value={item.description}
+                                onChange={(e) => updateItem(index, {description: e.target.value})}
+                                className="pt-input"
+                            />
+                        </div>
+                        <div className="pt-field">
+                            <label htmlFor={`purchase-item-cost-${index}`} className={`pt-label ${styles.mobileLabel}`}>Cost</label>
+                            <input
+                                id={`purchase-item-cost-${index}`}
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                placeholder="0.00"
+                                value={item.cost === 0 ? "" : item.cost}
+                                onChange={(e) => updateItem(index, {
+                                    cost: e.target.value === "" ? 0 : parseFloat(e.target.value) || 0,
+                                })}
+                                className="pt-input"
+                            />
+                        </div>
+                        <div className="pt-field">
+                            <label htmlFor={`purchase-item-recipient-${index}`} className={`pt-label ${styles.mobileLabel}`}>Paid for</label>
+                            <select
+                                id={`purchase-item-recipient-${index}`}
+                                value={item.recipientId}
+                                onChange={(e) => updateItem(index, {recipientId: Number(e.target.value)})}
+                                className="pt-input"
+                            >
+                                {members.map((member) => (
+                                    <option key={member.id} value={member.id}>
+                                        {member.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         {items.length > 1 && (
                             <button type ="button" className="pt-btn pt-btn-danger pt-btn-sm" onClick={() => removeItemRow(index)}>Remove</button>
                         )}
