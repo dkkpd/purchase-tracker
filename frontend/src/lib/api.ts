@@ -2,7 +2,7 @@ import axios from "axios";
 import {getToken} from "./auth"
 
 const api = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer "
