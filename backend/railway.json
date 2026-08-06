@@ -13,7 +13,8 @@
     "multiRegionConfig": {
       "sfo": {
         "numReplicas": 1
-      }
+      },
+    "sleepApplication": true
     },
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3,
